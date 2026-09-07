@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Speedometer</title>
+    <title>High-Speed Diagnostics Dashboard - Video Trial</title>
     <style>
         /* Base Reset */
         * {
@@ -24,24 +24,34 @@
             padding: 20px;
         }
 
-        /* Centered Unified Panel */
-        .container {
+        /* Dashboard Container Split Layout */
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            max-width: 980px;
+            background: #050505;
+            border: 1px solid #111111;
+            border-radius: 24px;
+            padding: 35px;
+            gap: 40px;
+            align-items: stretch;
+        }
+
+        /* LEFT COLUMN: Speedometer Metering System */
+        .left-panel {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
-            max-width: 400px;
-            padding: 30px;
-            background: #050505;
-            border: 1px solid #111111;
-            border-radius: 20px;
+            justify-content: center;
+            border-right: 1px solid #111111;
+            padding-right: 20px;
         }
 
-        /* Speedometer Section Layout */
         .speedometer-section {
             position: relative;
-            width: 320px;
-            height: 320px;
+            width: 300px;
+            height: 300px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -53,7 +63,7 @@
             bottom: 50%;
             left: 50%;
             width: 4px;
-            height: 110px;
+            height: 105px;
             background: #ffffff;
             border-radius: 4px;
             transform-origin: bottom center;
@@ -75,16 +85,16 @@
         /* Static Interval Markers (0-300) */
         .gauge-label {
             position: absolute;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: #666666;
+            color: #555555;
             transform: translate(-50%, -50%);
         }
 
         /* Readout Directly Below Center Pivot */
         .digital-display {
             text-align: center;
-            margin-top: -30px;
+            margin-top: -20px;
             margin-bottom: 25px;
             z-index: 2;
         }
@@ -101,18 +111,12 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             display: block;
-            margin-top: 2px;
-        }
-
-        /* Controls Positioned Stacked Directly Under Display */
-        .control-section {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            margin-top: 4px;
         }
 
         .input-group {
+            width: 100%;
+            max-width: 260px;
             display: flex;
             flex-direction: column;
             gap: 6px;
@@ -135,107 +139,200 @@
             border-color: #ffffff;
         }
 
-        button {
-            background: #ffffff;
-            color: #000000;
-            border: none;
-            border-radius: 10px;
-            padding: 14px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: opacity 0.2s ease;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
         .error-message {
             color: #ff4444;
             font-size: 12px;
             text-align: center;
             min-height: 16px;
         }
+
+        /* RIGHT COLUMN: Interactive Diagnostics Tab bar */
+        .right-panel {
+            flex: 1.4;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .panel-header p {
+            font-size: 13px;
+            color: #666666;
+        }
+
+        /* Horizontal Tab Bar Layout Container */
+        .tab-bar {
+            display: flex;
+            border-bottom: 1px solid #1a1a1a;
+            gap: 4px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #666666;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: #ffffff;
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #ffffff;
+        }
+
+        /* Video Presentation Player Showcase Box */
+        .media-viewer {
+            flex: 1;
+            background: #000000;
+            border: 1px solid #1a1a1a;
+            border-radius: 14px;
+            position: relative;
+            min-height: 240px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .video-container {
+            width: 100%;
+            height: 180px;
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: #000000;
+        }
+
+        .video-status-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #222;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #ff9900;
+            pointer-events: none;
+            font-weight: 600;
+        }
+
+        .media-caption-box {
+            padding: 15px;
+            background: #050505;
+            border-top: 1px solid #111111;
+        }
+
+        .media-caption-box h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .media-caption-box p {
+            font-size: 12px;
+            color: #888888;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            .left-panel {
+                border-right: none;
+                border-bottom: 1px solid #111111;
+                padding-right: 0;
+                padding-bottom: 30px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Speedometer Dial Component -->
-        <div class="speedometer-section">
-            <div class="gauge-label" style="top: 82%; left: 22%;">0</div>
-            <div class="gauge-label" style="top: 50%; left: 11%;">50</div>
-            <div class="gauge-label" style="top: 21%; left: 24%;">100</div>
-            <div class="gauge-label" style="top: 10%; left: 50%;">150</div>
-            <div class="gauge-label" style="top: 21%; left: 76%;">200</div>
-            <div class="gauge-label" style="top: 50%; left: 89%;">250</div>
-            <div class="gauge-label" style="top: 82%; left: 78%;">300</div>
+    <div class="dashboard-container">
+        <!-- LEFT COLUMN: Speedometer Panel -->
+        <div class="left-panel">
+            <div class="speedometer-section">
+                <div class="gauge-label" style="top: 82%; left: 22%;">0</div>
+                <div class="gauge-label" style="top: 50%; left: 11%;">50</div>
+                <div class="gauge-label" style="top: 21%; left: 24%;">100</div>
+                <div class="gauge-label" style="top: 10%; left: 50%;">150</div>
+                <div class="gauge-label" style="top: 21%; left: 76%;">200</div>
+                <div class="gauge-label" style="top: 50%; left: 89%;">250</div>
+                <div class="gauge-label" style="top: 82%; left: 78%;">300</div>
 
-            <div id="needle" class="needle"></div>
-            <div class="center-hub"></div>
-        </div>
+                <div id="needle" class="needle"></div>
+                <div class="center-hub"></div>
+            </div>
 
-        <!-- Live Digital Text Value Display -->
-        <div class="digital-display">
-            <div id="digitalSpeed" class="current-speed">0</div>
-            <span class="unit">km/h</span>
-        </div>
+            <div class="digital-display">
+                <div id="digitalSpeed" class="current-speed">0</div>
+                <span class="unit">km/h</span>
+            </div>
 
-        <!-- Integrated Interactivity Input Block Below Needle -->
-        <div class="control-section">
             <div class="input-group">
                 <input type="number" id="speedInput" min="0" max="300" placeholder="Enter Speed (0-300)" value="0">
                 <div id="errorBox" class="error-message"></div>
             </div>
         </div>
-    </div>
 
-    <script>
-        const speedInput = document.getElementById('speedInput');
-        const updateBtn = document.getElementById('updateBtn');
-        const needle = document.getElementById('needle');
-        const digitalSpeed = document.getElementById('digitalSpeed');
-        const errorBox = document.getElementById('errorBox');
+        <!-- RIGHT COLUMN: Diagnostics Component Tab interface deck -->
+        <div class="right-panel">
+            <div class="panel-header">
+                <h2>Real-World Vehicle Limits (TRIAL MODE)</h2>
+                <p>Testing video frame dimensions with your sample clip.</p>
+            </div>
 
-        function updateSpeedometer(targetSpeed) {
-            if (targetSpeed < 0 || targetSpeed > 300 || isNaN(targetSpeed)) {
-                errorBox.textContent = "Please enter a value between 0 and 300.";
-                return;
-            }
-            errorBox.textContent = "";
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('tyres')">Tyres</button>
+                <button class="tab-btn" onclick="switchTab('brakes')">Brakes</button>
+                <button class="tab-btn" onclick="switchTab('bolts')">Wheel Bolts</button>
+                <button class="tab-btn" onclick="switchTab('windshield')">Windshield</button>
+                <button class="tab-btn" onclick="switchTab('ev')">EV Battery</button>
+                <button class="tab-btn" onclick="switchTab('regulations')">Global Laws</button>
+            </div>
 
-            let currentDisplay = parseInt(digitalSpeed.textContent);
-            const duration = 800; 
-            const startTime = performance.now();
+            <div class="media-viewer">
+                <div class="video-container">
+                    <!-- Configured to run test.mp4 exclusively for this trial layout -->
+                    <video id="dashboardVideo" autoplay loop muted playsinline>
+                        <source id="videoSource" src="test.mp4" type="video/mp4">
+                    </video>
+                    <div id="videoFileLabel" class="video-status-overlay">RUNNING TRIAL: test.mp4</div>
+                </div>
 
-            function animateText(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const easeOutQuad = progress * (2 - progress);
-                const frameValue = Math.round(currentDisplay + (targetSpeed - currentDisplay) * easeOutQuad);
-                
-                digitalSpeed.textContent = frameValue;
-
-                if (progress < 1) {
-                    requestAnimationFrame(animateText);
-                }
-            }
-            requestAnimationFrame(animateText);
-
-            const rotationDegree = -120 + (targetSpeed / 300) * 240;
-            needle.style.transform = `translate(-50%, 0) rotate(${rotationDegree}deg)`;
-        }
-
-        // Keep the Enter key trigger for updates
-        speedInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                updateSpeedometer(parseInt(speedInput.value) || 0);
-            }
-        });
-
-        // Initialize Canvas View
-        updateSpeedometer(0);
-    </script>
-</body>
-</html>
+                <div class="media-caption-box">
