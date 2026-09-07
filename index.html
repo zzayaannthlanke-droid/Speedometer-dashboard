@@ -146,6 +146,11 @@
             cursor: pointer;
             transition: opacity 0.2s ease;
         }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
         .error-message {
             color: #ff4444;
             font-size: 12px;
@@ -159,7 +164,6 @@
     <div class="container">
         <!-- Speedometer Dial Component -->
         <div class="speedometer-section">
-            <!-- 50 interval marks arranged around the needle arc -->
             <div class="gauge-label" style="top: 82%; left: 22%;">0</div>
             <div class="gauge-label" style="top: 50%; left: 11%;">50</div>
             <div class="gauge-label" style="top: 21%; left: 24%;">100</div>
@@ -184,7 +188,6 @@
                 <input type="number" id="speedInput" min="0" max="300" placeholder="Enter Speed (0-300)" value="0">
                 <div id="errorBox" class="error-message"></div>
             </div>
-            <button id="updateBtn">Apply Speed</button>
         </div>
     </div>
 
@@ -202,7 +205,6 @@
             }
             errorBox.textContent = "";
 
-            // Numerical Counter Value Incrementor
             let currentDisplay = parseInt(digitalSpeed.textContent);
             const duration = 800; 
             const startTime = performance.now();
@@ -221,15 +223,11 @@
             }
             requestAnimationFrame(animateText);
 
-            // Needle Transform Mechanics (-120 to +120 deg)
             const rotationDegree = -120 + (targetSpeed / 300) * 240;
             needle.style.transform = `translate(-50%, 0) rotate(${rotationDegree}deg)`;
         }
 
-        updateBtn.addEventListener('click', () => {
-            updateSpeedometer(parseInt(speedInput.value) || 0);
-        });
-
+        // Keep the Enter key trigger for updates
         speedInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 updateSpeedometer(parseInt(speedInput.value) || 0);
