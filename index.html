@@ -1,219 +1,429 @@
+The input event listener needs to be directly bound using an explicit oninput handler to ensure the speedometer updates instantly when numbers are typed or changed.
+The updated, fully corrected code below fixes the event tracking so both the digital readout and the gauge needle respond immediately to your inputs while keeping your trial video playing.
+## 💻 The Complete Fixed Code (index.html)
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnostics Component</title>
+    <title>High-Speed Diagnostics Dashboard - Fixed Speedo</title>
     <style>
-        :root {
-            --bg-color: #121214;
-            --panel-bg: #1a1a1e;
-            --accent-color: #00ffaa;
-            --text-color: #ffffff;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
+        }
+
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            max-width: 980px;
+            background: #050505;
+            border: 1px solid #111111;
+            border-radius: 24px;
+            padding: 35px;
+            gap: 40px;
+            align-items: stretch;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid #111111;
+            padding-right: 20px;
+        }
+
+        .speedometer-section {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .needle {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            width: 4px;
+            height: 105px;
+            background: #ffffff;
+            border-radius: 4px;
+            transform-origin: bottom center;
+            transform: translate(-50%, 0) rotate(-120deg);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .center-hub {
+            position: absolute;
+            bottom: calc(50% - 12px);
+            left: calc(50% - 12px);
+            width: 24px;
+            height: 24px;
+            background: #ffffff;
+            border-radius: 50%;
+            border: 4px solid #000000;
+        }
+
+        .gauge-label {
+            position: absolute;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555555;
+            transform: translate(-50%, -50%);
+        }
+
+        .digital-display {
+            text-align: center;
+            margin-top: -20px;
+            margin-bottom: 25px;
+            z-index: 2;
+        }
+
+        .current-speed {
+            font-size: 54px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .unit {
+            font-size: 13px;
+            color: #444444;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .input-group {
+            width: 100%;
+            max-width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        input[type="number"] {
+            background: #111111;
+            border: 1px solid #222222;
+            border-radius: 10px;
+            padding: 14px;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #ffffff;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 12px;
+            text-align: center;
+            min-height: 16px;
         }
 
         .right-panel {
-            background: var(--panel-bg);
-            border-radius: 12px;
-            padding: 20px;
-            max-width: 500px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            flex: 1.4;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .panel-header h2 {
-            margin-top: 0;
-            font-size: 1.2rem;
-            letter-spacing: 0.5px;
-            color: #8e8e93;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .panel-header p {
+            font-size: 13px;
+            color: #666666;
+        }
+
+        .tab-bar {
+            display: flex;
+            border-bottom: 1px solid #1a1a1a;
+            gap: 4px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #666666;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: #ffffff;
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #ffffff;
         }
 
         .media-viewer {
+            flex: 1;
+            background: #000000;
+            border: 1px solid #1a1a1a;
+            border-radius: 14px;
+            position: relative;
+            min-height: 240px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            overflow: hidden;
         }
 
         .video-container {
-            position: relative;
             width: 100%;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #000;
+            height: 180px;
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
         }
 
         video {
             width: 100%;
-            display: block;
+            height: 100%;
+            object-fit: cover;
+            background-color: #000000;
         }
 
         .video-status-overlay {
             position: absolute;
             top: 10px;
-            left: 10px;
+            right: 10px;
             background: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-family: monospace;
-            color: var(--accent-color);
+            border: 1px solid #222;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #ff9900;
+            pointer-events: none;
+            font-weight: 600;
         }
 
-        /* Speedometer Styles */
-        .dashboard-metrics {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #24242b;
+        .media-caption-box {
             padding: 15px;
-            border-radius: 8px;
+            background: #050505;
+            border-top: 1px solid #111111;
         }
 
-        #speedometerCanvas {
-            width: 200px;
-            height: 120px;
+        .media-caption-box h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
         }
 
-        .digital-readout {
-            font-size: 2rem;
-            font-weight: bold;
-            font-family: monospace;
-            color: var(--accent-color);
-            margin-top: -10px;
+        .media-caption-box p {
+            font-size: 12px;
+            color: #888888;
+            line-height: 1.4;
         }
 
-        .unit {
-            font-size: 0.9rem;
-            color: #8e8e93;
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            .left-panel {
+                border-right: none;
+                border-bottom: 1px solid #111111;
+                padding-right: 0;
+                padding-bottom: 30px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- RIGHT COLUMN: Diagnostics Component Tab interface deck -->
-    <div class="right-panel">
-        <div class="panel-header">
-            <h2>Real-World Vehicle Limits (TRIAL MODE)</h2>
+    <div class="dashboard-container">
+        <div class="left-panel">
+            <div class="speedometer-section">
+                <div class="gauge-label" style="top: 82%; left: 22%;">0</div>
+                <div class="gauge-label" style="top: 50%; left: 11%;">50</div>
+                <div class="gauge-label" style="top: 21%; left: 24%;">100</div>
+                <div class="gauge-label" style="top: 10%; left: 50%;">150</div>
+                <div class="gauge-label" style="top: 21%; left: 76%;">200</div>
+                <div class="gauge-label" style="top: 50%; left: 89%;">250</div>
+                <div class="gauge-label" style="top: 82%; left: 78%;">300</div>
+
+                <div id="needle" class="needle"></div>
+                <div class="center-hub"></div>
+            </div>
+
+            <div class="digital-display">
+                <div id="digitalSpeed" class="current-speed">0</div>
+                <span class="unit">km/h</span>
+            </div>
+
+            <div class="input-group">
+                <!-- Added direct oninput attribute for instant triggering -->
+                <input type="number" id="speedInput" min="0" max="300" placeholder="Enter Speed (0-300)" value="0" oninput="handleSpeedChange(this.value)">
+                <div id="errorBox" class="error-message"></div>
+            </div>
         </div>
 
-        <div class="media-viewer">
-            <div class="video-container">
-                <!-- Video will play once, and then hard stop (no loop attribute) -->
-                <video id="dashboardVideo" autoplay muted playsinline>
-                    <source src="test.mp4" type="video/mp4">
-                    <source src="sample.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-                <div id="videoFileLabel" class="video-status-overlay">STATUS: PLAYING</div>
+        <div class="right-panel">
+            <div class="panel-header">
+                <h2>Real-World Vehicle Limits (TRIAL MODE)</h2>
+                <p>Testing video frame dimensions with your sample clip.</p>
             </div>
 
-            <!-- Added speedometer container elements -->
-            <div class="dashboard-metrics">
-                <canvas id="speedometerCanvas" width="200" height="120"></canvas>
-                <div class="digital-readout"><span id="speedValue">0</span> <span class="unit">KM/H</span></div>
+            <div class="tab-bar">
+                <button class="tab-btn active" id="btn-tyres" onclick="switchTab('tyres', this)">Tyres</button>
+                <button class="tab-btn" id="btn-brakes" onclick="switchTab('brakes', this)">Brakes</button>
+                <button class="tab-btn" id="btn-bolts" onclick="switchTab('bolts', this)">Wheel Bolts</button>
+                <button class="tab-btn" id="btn-windshield" onclick="switchTab('windshield', this)">Windshield</button>
+                <button class="tab-btn" id="btn-ev" onclick="switchTab('ev', this)">EV Battery</button>
+                <button class="tab-btn" id="btn-regulations" onclick="switchTab('regulations', this)">Global Laws</button>
             </div>
 
-            <div class="media-caption-box">
-                <!-- Captions or diagnostics readouts go here -->
+            <div class="media-viewer">
+                <div class="video-container">
+                    <video id="dashboardVideo" autoplay loop muted playsinline>
+                        <source id="videoSource" src="sample.mp4" type="video/mp4">
+                    </video>
+                    <div id="videoFileLabel" class="video-status-overlay">RUNNING TRIAL: sample.mp4</div>
+                </div>
+
+                <div class="media-caption-box">
+                    <h4 id="captionTitle">Tyres Status</h4>
+                    <p id="captionBody">Enter a speed on the left to test your car's components.</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const video = document.getElementById('dashboardVideo');
-        const statusOverlay = document.getElementById('videoFileLabel');
-        const canvas = document.getElementById('speedometerCanvas');
-        const ctx = canvas.getContext('2d');
-        const speedValueDisplay = document.getElementById('speedValue');
+        const speedInput = document.getElementById('speedInput');
+        const needle = document.getElementById('needle');
 
-        let currentSpeed = 0;
-        let targetSpeed = 120; // Maximum simulation speed threshold
-        let animationFrameId;
+const digitalSpeed = document.getElementById('digitalSpeed');
+const errorBox = document.getElementById('errorBox');
+const dashboardVideo = document.getElementById('dashboardVideo');
+const captionTitle = document.getElementById('captionTitle');
+const captionBody = document.getElementById('captionBody');
+let currentActiveTab = 'tyres';
+let currentValidatedSpeed = 0;
+const diagnosticsData = {
+tyres: {
+title: "Tyres & Road Grip Status",
+getDesc: (s) => s <= 100 ? "Comfortable city cruising. Normal tyre temperatures and minimal wear." :
+s <= 200 ? "Highway speeds. Regular family road tyres will start getting very hot here." :
+"Danger! Standard tyres can blowout at this speed. Special speed-rated racing track tyres (Y-Rated) are mandatory!"
+},
+brakes: {
+title: "Brakes & Stopping Power Distance",
+getDesc: (s) => s <= 100 ? "Standard steel brakes stop the vehicle smoothly within a normal, safe distance." :
+s <= 200 ? "Brakes experience heavy thermal fade. Stopping distance is tripled due to intense kinetic energy." :
+"Extreme Warning! Ordinary steel brakes will melt or fail completely. Professional track-spec carbon-ceramic brakes are required."
+},
+bolts: {
+title: "Wheel Hub Bolts & Lug Fastener Stress",
+getDesc: (s) => s <= 100 ? "Standard Grade 8.8 factory lug nuts operating within perfectly safe factory torque levels." :
+s <= 200 ? "High rotational stress. Upgraded Grade 10.9 high-tensile steel bolts recommended to hold up against high highway vibrations." :
+"Extreme Risk! Heavy torque shearing stress. Race-certified Titanium structural fasteners are required at 300 km/h to prevent wheel detachment."
+},
+windshield: {
+title: "Windshield Glass Safety Markings & Thickness",
+getDesc: (s) => s <= 100 ? "Marking: AS-1 Laminated Glass. Thickness: Standard 4.5mm. Fully safe for basic city wind resistance and tiny gravel hits." :
+s <= 200 ? "Marking: AS-1 Acoustic Multi-layer. Thickness: 5.5mm. Required to damp out loud highway wind howling and structural buffeting noise." :
+"Marking: Track-Approved Safety Certification. Thickness: 6mm to 8mm Polycarbonate laminate. Necessary to withstand crushing air walls without caving into the cabin."
+},
+ev: {
+title: "EV Battery System Thermal & Discharge Performance",
+getDesc: (s) => s <= 100 ? "Battery Discharge: Optimal efficiency. Battery runs perfectly cool and generative braking recovers energy normally." :
+s <= 200 ? "Battery Discharge: Massive energy drain. Cell temperatures are climbing quickly and total driving range drops by over 50%." :
+"Battery Discharge: Critical heat generation! System activates thermal throttling to cut power output and protect cells from damage while liquid cooling pumps spin at maximum capacity."
+},
+regulations: {
+title: "International Legal Compliance Status",
+getDesc: (s) => s <= 130 ? "Legal Compliance: Fully legal on almost all major global highways. Fits within standard global vehicle test frameworks." :
+s <= 240 ? "Legal Compliance: Severe offense in almost all nations (USA, UK, India, Australia) leading to immediate vehicle impounding, except on unrestricted zones of the German Autobahn." :
+"Legal Compliance: Criminal offense globally. Only permissible on designated closed racing tracks or de-restricted sectors of the German Autobahn under clear driving conditions."
+}
+};
+function handleSpeedChange(value) {
+const val = parseInt(value);
+if (isNaN(val)) {
+updateSpeedometer(0);
+} else if (val < 0 || val > 300) {
+errorBox.textContent = "Please enter a value between 0 and 300.";
+} else {
+errorBox.textContent = "";
+updateSpeedometer(val);
+}
+}
+function updateSpeedometer(targetSpeed) {
+currentValidatedSpeed = targetSpeed;
+digitalSpeed.textContent = targetSpeed;
+const rotationDegree = -120 + (targetSpeed / 300) * 240;
+needle.style.transform = translate(-50%, 0) rotate(${rotationDegree}deg);
+syncTextContent();
+dashboardVideo.play().catch(e => {});
+}
+function switchTab(tabKey, element) {
+currentActiveTab = tabKey;
+document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+if (element) {
+element.classList.add('active');
+}
+syncTextContent();
+dashboardVideo.currentTime = 0;
+dashboardVideo.play().catch(e => {});
+}
+function syncTextContent() {
+const dataObj = diagnosticsData[currentActiveTab];
+captionTitle.textContent = dataObj.title;
+captionBody.textContent = dataObj.getDesc(currentValidatedSpeed);
+}
+updateSpeedometer(0);
 
-        // 1. Video Playback Control Rules
-        video.addEventListener('play', () => {
-            statusOverlay.textContent = "STATUS: PLAYING";
-            statusOverlay.style.color = "#00ffaa";
-            animateSpeedometer();
-        });
 
-        video.addEventListener('ended', () => {
-            statusOverlay.textContent = "STATUS: ENDED / STOPPED";
-            statusOverlay.style.color = "#ff453a"; // Changes overlay red when video completely stops
-            cancelAnimationFrame(animationFrameId); // Freeze gauge telemetry tracking
-        });
 
-        // 2. HTML5 Canvas Speedometer Logic Engine
-        function drawSpeedometer(speed) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height - 10;
-            const radius = 80;
+<FollowUp>
+Save and commit this revised code into your repository. Does the **needle and digital number** respond immediately when you type a number in the box now?
+</FollowUp>
 
-            // Draw Background Dial Track Archetype
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, Math.PI, 2 * Math.PI, false);
-            ctx.lineWidth = 10;
-            ctx.strokeStyle = '#3a3a44';
-            ctx.stroke();
 
-            // Draw Active Speed Arc Layer
-            const speedPercentage = Math.min(speed / 160, 1); // Normalized against 160 KM/H max metric
-            const endAngle = Math.PI + (Math.PI * speedPercentage);
-
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, Math.PI, endAngle, false);
-            ctx.lineWidth = 10;
-            ctx.strokeStyle = '#00ffaa';
-            ctx.stroke();
-
-            // Draw Indicator Needle Node Pin
-            ctx.save();
-            ctx.translate(centerX, centerY);
-            ctx.rotate(endAngle - Math.PI);
-            
-            ctx.beginPath();
-            ctx.moveTo(0, 4);
-            ctx.lineTo(radius - 15, 0);
-            ctx.lineTo(0, -4);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-            
-            ctx.restore();
-
-            // Center core node cap
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-        }
-
-        // 3. Dynamic Telemetry Synchronizer
-        function animateSpeedometer() {
-            if (video.paused || video.ended) return;
-
-            // Simulates vehicle speed variations tied directly to active video frame playback
-            const progress = video.currentTime / video.duration;
-            if (!isNaN(progress)) {
-                // Wave speed profiling behavior simulation logic
-                currentSpeed = Math.floor(Math.sin(progress * Math.PI) * targetSpeed);
-                speedValueDisplay.textContent = currentSpeed;
-                drawSpeedometer(currentSpeed);
-            }
-
-            animationFrameId = requestAnimationFrame(animateSpeedometer);
-        }
-
-        // Initialize empty stationary meter container state explicitly on launch layout
-        drawSpeedometer(0);
-    </script>
-</body>
-</html>
