@@ -274,6 +274,7 @@
 <body>
 
     <div class="dashboard-container">
+        <!-- Left Panel: Speedometer -->
         <div class="left-panel">
             <div class="speedometer-section">
                 <div class="gauge-label" style="top: 82%; left: 22%;">0</div>
@@ -294,16 +295,16 @@
             </div>
 
             <div class="input-group">
-                <!-- Added direct oninput attribute for instant triggering -->
-                <input type="number" id="speedInput" min="0" max="300" placeholder="Enter Speed (0-300)" value="0" oninput="handleSpeedChange(this.value)">
+                <input type="number" id="speedInput" min="0" max="300" placeholder="Enter Speed (0-300)" value="0">
                 <div id="errorBox" class="error-message"></div>
             </div>
         </div>
 
+        <!-- Right Panel: Tabs and Video Deck -->
         <div class="right-panel">
             <div class="panel-header">
                 <h2>Real-World Vehicle Limits (TRIAL MODE)</h2>
-                <p>Testing video frame dimensions with your sample clip.</p>
+                <p>Select a part to analyze how daily driving components handle high speeds.</p>
             </div>
 
             <div class="tab-bar">
@@ -317,7 +318,8 @@
 
             <div class="media-viewer">
                 <div class="video-container">
-                    <video id="dashboardVideo" autoplay loop muted playsinline>
+                    <!-- Removed loop attribute so video runs exactly once per change -->
+                    <video id="dashboardVideo" autoplay muted playsinline>
                         <source id="videoSource" src="sample.mp4" type="video/mp4">
                     </video>
                     <div id="videoFileLabel" class="video-status-overlay">RUNNING TRIAL: sample.mp4</div>
@@ -332,94 +334,3 @@
     </div>
 
     <script>
-        const speedInput = document.getElementById('speedInput');
-        const needle = document.getElementById('needle');
-
-const digitalSpeed = document.getElementById('digitalSpeed');
-const errorBox = document.getElementById('errorBox');
-const dashboardVideo = document.getElementById('dashboardVideo');
-const captionTitle = document.getElementById('captionTitle');
-const captionBody = document.getElementById('captionBody');
-let currentActiveTab = 'tyres';
-let currentValidatedSpeed = 0;
-const diagnosticsData = {
-tyres: {
-title: "Tyres & Road Grip Status",
-getDesc: (s) => s <= 100 ? "Comfortable city cruising. Normal tyre temperatures and minimal wear." :
-s <= 200 ? "Highway speeds. Regular family road tyres will start getting very hot here." :
-"Danger! Standard tyres can blowout at this speed. Special speed-rated racing track tyres (Y-Rated) are mandatory!"
-},
-brakes: {
-title: "Brakes & Stopping Power Distance",
-getDesc: (s) => s <= 100 ? "Standard steel brakes stop the vehicle smoothly within a normal, safe distance." :
-s <= 200 ? "Brakes experience heavy thermal fade. Stopping distance is tripled due to intense kinetic energy." :
-"Extreme Warning! Ordinary steel brakes will melt or fail completely. Professional track-spec carbon-ceramic brakes are required."
-},
-bolts: {
-title: "Wheel Hub Bolts & Lug Fastener Stress",
-getDesc: (s) => s <= 100 ? "Standard Grade 8.8 factory lug nuts operating within perfectly safe factory torque levels." :
-s <= 200 ? "High rotational stress. Upgraded Grade 10.9 high-tensile steel bolts recommended to hold up against high highway vibrations." :
-"Extreme Risk! Heavy torque shearing stress. Race-certified Titanium structural fasteners are required at 300 km/h to prevent wheel detachment."
-},
-windshield: {
-title: "Windshield Glass Safety Markings & Thickness",
-getDesc: (s) => s <= 100 ? "Marking: AS-1 Laminated Glass. Thickness: Standard 4.5mm. Fully safe for basic city wind resistance and tiny gravel hits." :
-s <= 200 ? "Marking: AS-1 Acoustic Multi-layer. Thickness: 5.5mm. Required to damp out loud highway wind howling and structural buffeting noise." :
-"Marking: Track-Approved Safety Certification. Thickness: 6mm to 8mm Polycarbonate laminate. Necessary to withstand crushing air walls without caving into the cabin."
-},
-ev: {
-title: "EV Battery System Thermal & Discharge Performance",
-getDesc: (s) => s <= 100 ? "Battery Discharge: Optimal efficiency. Battery runs perfectly cool and generative braking recovers energy normally." :
-s <= 200 ? "Battery Discharge: Massive energy drain. Cell temperatures are climbing quickly and total driving range drops by over 50%." :
-"Battery Discharge: Critical heat generation! System activates thermal throttling to cut power output and protect cells from damage while liquid cooling pumps spin at maximum capacity."
-},
-regulations: {
-title: "International Legal Compliance Status",
-getDesc: (s) => s <= 130 ? "Legal Compliance: Fully legal on almost all major global highways. Fits within standard global vehicle test frameworks." :
-s <= 240 ? "Legal Compliance: Severe offense in almost all nations (USA, UK, India, Australia) leading to immediate vehicle impounding, except on unrestricted zones of the German Autobahn." :
-"Legal Compliance: Criminal offense globally. Only permissible on designated closed racing tracks or de-restricted sectors of the German Autobahn under clear driving conditions."
-}
-};
-function handleSpeedChange(value) {
-const val = parseInt(value);
-if (isNaN(val)) {
-updateSpeedometer(0);
-} else if (val < 0 || val > 300) {
-errorBox.textContent = "Please enter a value between 0 and 300.";
-} else {
-errorBox.textContent = "";
-updateSpeedometer(val);
-}
-}
-function updateSpeedometer(targetSpeed) {
-currentValidatedSpeed = targetSpeed;
-digitalSpeed.textContent = targetSpeed;
-const rotationDegree = -120 + (targetSpeed / 300) * 240;
-needle.style.transform = translate(-50%, 0) rotate(${rotationDegree}deg);
-syncTextContent();
-dashboardVideo.play().catch(e => {});
-}
-function switchTab(tabKey, element) {
-currentActiveTab = tabKey;
-document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-if (element) {
-element.classList.add('active');
-}
-syncTextContent();
-dashboardVideo.currentTime = 0;
-dashboardVideo.play().catch(e => {});
-}
-function syncTextContent() {
-const dataObj = diagnosticsData[currentActiveTab];
-captionTitle.textContent = dataObj.title;
-captionBody.textContent = dataObj.getDesc(currentValidatedSpeed);
-}
-updateSpeedometer(0);
-
-
-
-<FollowUp>
-Save and commit this revised code into your repository. Does the **needle and digital number** respond immediately when you type a number in the box now?
-</FollowUp>
-
-
