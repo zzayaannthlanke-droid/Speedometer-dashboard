@@ -1,1250 +1,1161 @@
 ```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>High-Speed Diagnostics Dashboard</title>
+<title>High-Speed Diagnostics Dashboard</title>
 
-    <style>
+<style>
 
-        /* =========================
-           GLOBAL
-        ========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                sans-serif;
-        }
+body {
+    background: #000;
+    color: #fff;
+    min-height: 100vh;
 
-        body {
-            background: #000000;
-            color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-            min-height: 100vh;
+    padding: 20px;
+}
 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+.dashboard-container {
+    width: 100%;
+    max-width: 980px;
 
-            padding: 20px;
-        }
+    display: flex;
 
+    background: #050505;
 
-        /* =========================
-           MAIN DASHBOARD
-        ========================= */
+    border: 1px solid #111;
+    border-radius: 24px;
 
-        .dashboard-container {
+    padding: 35px;
 
-            display: flex;
+    gap: 40px;
+}
 
-            width: 100%;
-            max-width: 980px;
 
-            background: #050505;
+/* ================================
+   LEFT PANEL
+================================ */
 
-            border: 1px solid #111111;
+.left-panel {
+    flex: 1;
 
-            border-radius: 24px;
+    display: flex;
+    flex-direction: column;
 
-            padding: 35px;
+    align-items: center;
+    justify-content: center;
 
-            gap: 40px;
+    border-right: 1px solid #111;
 
-            align-items: stretch;
-        }
+    padding-right: 20px;
+}
 
 
-        /* =========================
-           LEFT PANEL
-        ========================= */
+/* ================================
+   SPEEDOMETER
+================================ */
 
-        .left-panel {
+.speedometer {
+    width: 320px;
+    height: 320px;
 
-            flex: 1;
+    position: relative;
+}
 
-            display: flex;
-            flex-direction: column;
+.speedometer svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
 
-            align-items: center;
-            justify-content: center;
 
-            border-right: 1px solid #111111;
+/* Gauge numbers */
 
-            padding-right: 20px;
-        }
+.gauge-number {
+    fill: #555;
+    font-size: 13px;
+    font-weight: 600;
+}
 
 
-        /* =========================
-           SPEEDOMETER
-        ========================= */
+/* Needle */
 
-        .speedometer-section {
+#needle {
+    transform-origin: 160px 160px;
 
-            position: relative;
+    transform:
+        rotate(-120deg);
 
-            width: 300px;
-            height: 300px;
+    transition:
+        transform 0.45s cubic-bezier(.2,.8,.2,1);
+}
 
-            display: flex;
 
-            justify-content: center;
-            align-items: center;
-        }
+/* Digital display */
 
+.digital-display {
+    text-align: center;
 
-        /* =========================
-           GAUGE LABELS
-        ========================= */
+    margin-top: -10px;
 
-        .gauge-label {
+    margin-bottom: 25px;
+}
 
-            position: absolute;
+.current-speed {
+    font-size: 54px;
 
-            font-size: 13px;
+    font-weight: 800;
 
-            font-weight: 600;
+    line-height: 1;
+}
 
-            color: #555555;
+.unit {
+    display: block;
 
-            transform:
-                translate(-50%, -50%);
+    margin-top: 5px;
 
-            z-index: 3;
-        }
+    color: #444;
 
+    font-size: 13px;
 
-        /* =========================
-           SPEEDOMETER NEEDLE
-        ========================= */
+    letter-spacing: 2px;
 
-        .needle {
+    text-transform: uppercase;
+}
 
-            position: absolute;
 
-            width: 4px;
+/* ================================
+   INPUT
+================================ */
 
-            height: 105px;
+.input-group {
+    width: 100%;
+    max-width: 260px;
 
-            /*
-               Needle pivot is exactly
-               at the center of gauge.
-            */
+    display: flex;
+    flex-direction: column;
 
-            left: 50%;
-            top: 50%;
+    gap: 6px;
+}
 
-            background: #ffffff;
+input[type="number"] {
 
-            border-radius: 4px;
+    width: 100%;
 
-            /*
-               Bottom of needle is
-               the rotation point.
-            */
+    background: #111;
 
-            transform-origin:
-                50% 100%;
+    border: 1px solid #222;
 
-            /*
-               Initial position = 0 km/h
-               Gauge starts at -120 degrees.
-            */
+    border-radius: 10px;
 
-            transform:
-                translate(-50%, -100%)
-                rotate(-120deg);
+    padding: 14px;
 
-            transition:
-                transform 0.45s
-                cubic-bezier(.2, .8, .2, 1);
+    color: white;
 
-            z-index: 4;
-        }
+    font-size: 18px;
 
+    font-weight: 600;
 
-        /* =========================
-           CENTER HUB
-        ========================= */
+    text-align: center;
+}
 
-        .center-hub {
+input[type="number"]:focus {
 
-            position: absolute;
+    outline: none;
 
-            width: 24px;
-            height: 24px;
+    border-color: white;
+}
 
-            left: 50%;
-            top: 50%;
+.error-message {
 
-            transform:
-                translate(-50%, -50%);
+    min-height: 16px;
 
-            background: #ffffff;
+    color: #ff4444;
 
-            border-radius: 50%;
+    font-size: 12px;
 
-            border: 4px solid #000000;
+    text-align: center;
+}
 
-            z-index: 5;
-        }
 
+/* ================================
+   RIGHT PANEL
+================================ */
 
-        /* =========================
-           DIGITAL SPEED DISPLAY
-        ========================= */
+.right-panel {
+    flex: 1.4;
 
-        .digital-display {
+    display: flex;
 
-            text-align: center;
+    flex-direction: column;
 
-            margin-top: -20px;
+    gap: 20px;
+}
 
-            margin-bottom: 25px;
+.panel-header h2 {
+    font-size: 20px;
 
-            z-index: 2;
-        }
+    margin-bottom: 4px;
+}
 
+.panel-header p {
+    font-size: 13px;
 
-        .current-speed {
+    color: #666;
+}
 
-            font-size: 54px;
 
-            font-weight: 800;
+/* ================================
+   TABS
+================================ */
 
-            line-height: 1;
-        }
+.tab-bar {
 
+    display: flex;
 
-        .unit {
+    gap: 4px;
 
-            font-size: 13px;
+    overflow-x: auto;
 
-            color: #444444;
+    padding-bottom: 4px;
 
-            text-transform: uppercase;
+    border-bottom: 1px solid #1a1a1a;
+}
 
-            letter-spacing: 2px;
+.tab-btn {
 
-            display: block;
+    background: none;
 
-            margin-top: 4px;
-        }
+    border: none;
 
+    color: #666;
 
-        /* =========================
-           SPEED INPUT
-        ========================= */
+    padding: 10px 12px;
 
-        .input-group {
+    font-size: 13px;
 
-            width: 100%;
+    font-weight: 600;
 
-            max-width: 260px;
+    cursor: pointer;
 
-            display: flex;
+    white-space: nowrap;
 
-            flex-direction: column;
+    position: relative;
+}
 
-            gap: 6px;
-        }
+.tab-btn:hover {
+    color: white;
+}
 
+.tab-btn.active {
+    color: white;
+}
 
-        input[type="number"] {
+.tab-btn.active::after {
 
-            background: #111111;
+    content: "";
 
-            border: 1px solid #222222;
+    position: absolute;
 
-            border-radius: 10px;
+    bottom: -5px;
 
-            padding: 14px;
+    left: 0;
 
-            color: #ffffff;
+    width: 100%;
 
-            font-size: 18px;
+    height: 2px;
 
-            font-weight: 600;
+    background: white;
+}
 
-            text-align: center;
 
-            transition:
-                border-color 0.2s ease;
-        }
+/* ================================
+   MEDIA
+================================ */
 
+.media-viewer {
 
-        input[type="number"]:focus {
+    flex: 1;
 
-            outline: none;
+    min-height: 240px;
 
-            border-color: #ffffff;
-        }
+    background: #000;
 
+    border: 1px solid #1a1a1a;
 
-        /* =========================
-           ERROR
-        ========================= */
+    border-radius: 14px;
 
-        .error-message {
+    overflow: hidden;
+}
 
-            color: #ff4444;
+.video-container {
 
-            font-size: 12px;
+    width: 100%;
 
-            text-align: center;
+    height: 180px;
 
-            min-height: 16px;
-        }
+    background: #0a0a0a;
 
+    position: relative;
+}
 
-        /* =========================
-           RIGHT PANEL
-        ========================= */
+video {
 
-        .right-panel {
+    width: 100%;
+    height: 100%;
 
-            flex: 1.4;
+    object-fit: cover;
 
-            display: flex;
+    background: #000;
+}
 
-            flex-direction: column;
+.video-status-overlay {
 
-            gap: 20px;
-        }
+    position: absolute;
 
+    top: 10px;
+    right: 10px;
 
-        /* =========================
-           HEADER
-        ========================= */
+    padding: 4px 10px;
 
-        .panel-header h2 {
+    background: rgba(0,0,0,.7);
 
-            font-size: 20px;
+    border: 1px solid #222;
 
-            font-weight: 700;
+    border-radius: 6px;
 
-            letter-spacing: -0.5px;
+    color: #ff9900;
 
-            margin-bottom: 4px;
-        }
+    font-size: 11px;
 
+    font-weight: 600;
+}
 
-        .panel-header p {
+.media-caption-box {
 
-            font-size: 13px;
+    padding: 15px;
 
-            color: #666666;
-        }
+    background: #050505;
 
+    border-top: 1px solid #111;
+}
 
-        /* =========================
-           TABS
-        ========================= */
+.media-caption-box h4 {
 
-        .tab-bar {
+    font-size: 14px;
 
-            display: flex;
+    margin-bottom: 6px;
+}
 
-            border-bottom:
-                1px solid #1a1a1a;
+.media-caption-box p {
 
-            gap: 4px;
+    font-size: 12px;
 
-            overflow-x: auto;
+    line-height: 1.4;
 
-            padding-bottom: 4px;
-        }
+    color: #888;
+}
 
 
-        .tab-btn {
+/* ================================
+   MOBILE
+================================ */
 
-            background: none;
+@media (max-width: 768px) {
 
-            border: none;
+    .dashboard-container {
 
-            color: #666666;
+        flex-direction: column;
 
-            padding: 10px 12px;
+        padding: 25px;
 
-            font-size: 13px;
+    }
 
-            font-weight: 600;
+    .left-panel {
 
-            cursor: pointer;
+        border-right: none;
 
-            transition:
-                all 0.2s ease;
+        border-bottom: 1px solid #111;
 
-            position: relative;
+        padding-right: 0;
 
-            white-space: nowrap;
-        }
+        padding-bottom: 30px;
+    }
 
+}
 
-        .tab-btn:hover {
+@media (max-width: 400px) {
 
-            color: #ffffff;
-        }
+    .speedometer {
 
+        width: 280px;
+        height: 280px;
+    }
 
-        .tab-btn.active {
+}
 
-            color: #ffffff;
-        }
-
-
-        .tab-btn.active::after {
-
-            content: '';
-
-            position: absolute;
-
-            bottom: -5px;
-
-            left: 0;
-
-            width: 100%;
-
-            height: 2px;
-
-            background: #ffffff;
-        }
-
-
-        /* =========================
-           MEDIA VIEWER
-        ========================= */
-
-        .media-viewer {
-
-            flex: 1;
-
-            background: #000000;
-
-            border:
-                1px solid #1a1a1a;
-
-            border-radius: 14px;
-
-            position: relative;
-
-            min-height: 240px;
-
-            display: flex;
-
-            flex-direction: column;
-
-            overflow: hidden;
-        }
-
-
-        /* =========================
-           VIDEO
-        ========================= */
-
-        .video-container {
-
-            width: 100%;
-
-            height: 180px;
-
-            background: #0a0a0a;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-            position: relative;
-        }
-
-
-        video {
-
-            width: 100%;
-
-            height: 100%;
-
-            object-fit: cover;
-
-            background-color: #000000;
-        }
-
-
-        /* =========================
-           VIDEO STATUS
-        ========================= */
-
-        .video-status-overlay {
-
-            position: absolute;
-
-            top: 10px;
-
-            right: 10px;
-
-            background:
-                rgba(0, 0, 0, 0.7);
-
-            border:
-                1px solid #222;
-
-            padding: 4px 10px;
-
-            border-radius: 6px;
-
-            font-size: 11px;
-
-            color: #ff9900;
-
-            pointer-events: none;
-
-            font-weight: 600;
-        }
-
-
-        /* =========================
-           CAPTION
-        ========================= */
-
-        .media-caption-box {
-
-            padding: 15px;
-
-            background: #050505;
-
-            border-top:
-                1px solid #111111;
-        }
-
-
-        .media-caption-box h4 {
-
-            font-size: 14px;
-
-            font-weight: 600;
-
-            margin-bottom: 6px;
-        }
-
-
-        .media-caption-box p {
-
-            font-size: 12px;
-
-            color: #888888;
-
-            line-height: 1.4;
-        }
-
-
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 768px) {
-
-            .dashboard-container {
-
-                flex-direction: column;
-
-                padding: 25px;
-
-                gap: 30px;
-            }
-
-
-            .left-panel {
-
-                border-right: none;
-
-                border-bottom:
-                    1px solid #111111;
-
-                padding-right: 0;
-
-                padding-bottom: 30px;
-            }
-
-
-            .speedometer-section {
-
-                width: 280px;
-
-                height: 280px;
-            }
-
-
-            .right-panel {
-
-                width: 100%;
-            }
-        }
-
-
-        @media (max-width: 400px) {
-
-            body {
-
-                padding: 10px;
-            }
-
-
-            .dashboard-container {
-
-                padding: 20px;
-
-                border-radius: 18px;
-            }
-
-
-            .speedometer-section {
-
-                width: 260px;
-
-                height: 260px;
-            }
-
-
-            .current-speed {
-
-                font-size: 48px;
-            }
-        }
-
-    </style>
+</style>
 </head>
 
 
 <body>
 
 
-    <!-- ==================================================
-         DASHBOARD
-    ================================================== -->
-
-    <div class="dashboard-container">
+<div class="dashboard-container">
 
 
-        <!-- ==================================================
-             LEFT PANEL
-        ================================================== -->
+<!-- =====================================
+     LEFT SIDE
+===================================== -->
 
-        <div class="left-panel">
-
-
-            <!-- SPEEDOMETER -->
-
-            <div class="speedometer-section">
+<div class="left-panel">
 
 
-                <!-- Gauge numbers -->
+    <!-- SPEEDOMETER -->
 
-                <div
-                    class="gauge-label"
-                    style="top: 82%; left: 22%;">
-                    0
-                </div>
+    <div class="speedometer">
 
-
-                <div
-                    class="gauge-label"
-                    style="top: 50%; left: 11%;">
-                    50
-                </div>
+        <svg
+            viewBox="0 0 320 320"
+            xmlns="http://www.w3.org/2000/svg">
 
 
-                <div
-                    class="gauge-label"
-                    style="top: 21%; left: 24%;">
-                    100
-                </div>
+            <!-- =========================
+                 OUTER GAUGE
+            ========================== -->
+
+            <path
+                d="M 58 244
+                   A 125 125 0 1 1 262 244"
+                fill="none"
+                stroke="#1c1c1c"
+                stroke-width="2"
+            />
 
 
-                <div
-                    class="gauge-label"
-                    style="top: 10%; left: 50%;">
-                    150
-                </div>
+            <!-- =========================
+                 TICK MARKS
+            ========================== -->
+
+            <g
+                id="ticks"
+                stroke="#333"
+                stroke-width="2">
+            </g>
 
 
-                <div
-                    class="gauge-label"
-                    style="top: 21%; left: 76%;">
-                    200
-                </div>
+            <!-- =========================
+                 NUMBERS
+            ========================== -->
+
+            <text
+                x="67"
+                y="252"
+                text-anchor="middle"
+                class="gauge-number">
+                0
+            </text>
+
+            <text
+                x="45"
+                y="170"
+                text-anchor="middle"
+                class="gauge-number">
+                50
+            </text>
+
+            <text
+                x="78"
+                y="92"
+                text-anchor="middle"
+                class="gauge-number">
+                100
+            </text>
+
+            <text
+                x="160"
+                y="62"
+                text-anchor="middle"
+                class="gauge-number">
+                150
+            </text>
+
+            <text
+                x="242"
+                y="92"
+                text-anchor="middle"
+                class="gauge-number">
+                200
+            </text>
+
+            <text
+                x="275"
+                y="170"
+                text-anchor="middle"
+                class="gauge-number">
+                250
+            </text>
+
+            <text
+                x="253"
+                y="252"
+                text-anchor="middle"
+                class="gauge-number">
+                300
+            </text>
 
 
-                <div
-                    class="gauge-label"
-                    style="top: 50%; left: 89%;">
-                    250
-                </div>
+            <!-- =========================
+                 NEEDLE
+            ========================== -->
+
+            <g id="needle">
+
+                <line
+                    x1="160"
+                    y1="160"
+                    x2="160"
+                    y2="55"
+                    stroke="white"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                />
+
+            </g>
 
 
-                <div
-                    class="gauge-label"
-                    style="top: 82%; left: 78%;">
-                    300
-                </div>
+            <!-- =========================
+                 CENTER HUB
+            ========================== -->
+
+            <circle
+                cx="160"
+                cy="160"
+                r="12"
+                fill="white"
+            />
+
+            <circle
+                cx="160"
+                cy="160"
+                r="5"
+                fill="black"
+            />
 
 
-                <!-- NEEDLE -->
+        </svg>
 
-                <div
-                    id="needle"
-                    class="needle">
-                </div>
+    </div>
 
 
-                <!-- CENTER HUB -->
+    <!-- DIGITAL SPEED -->
 
-                <div
-                    class="center-hub">
-                </div>
+    <div class="digital-display">
 
+        <div
+            id="digitalSpeed"
+            class="current-speed">
+            0
+        </div>
+
+        <span class="unit">
+            km/h
+        </span>
+
+    </div>
+
+
+    <!-- INPUT -->
+
+    <div class="input-group">
+
+        <input
+            type="number"
+            id="speedInput"
+            min="0"
+            max="300"
+            value="0"
+            placeholder="Enter Speed (0-300)"
+        >
+
+        <div
+            id="errorBox"
+            class="error-message">
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================
+     RIGHT SIDE
+===================================== -->
+
+<div class="right-panel">
+
+
+    <div class="panel-header">
+
+        <h2>
+            Real-World Vehicle Limits
+        </h2>
+
+        <p>
+            Select a part to analyze how daily
+            driving components handle high speeds.
+        </p>
+
+    </div>
+
+
+    <!-- TABS -->
+
+    <div class="tab-bar">
+
+        <button
+            class="tab-btn active"
+            onclick="switchTab('tyres', this)">
+            Tyres
+        </button>
+
+        <button
+            class="tab-btn"
+            onclick="switchTab('brakes', this)">
+            Brakes
+        </button>
+
+        <button
+            class="tab-btn"
+            onclick="switchTab('bolts', this)">
+            Wheel Bolts
+        </button>
+
+        <button
+            class="tab-btn"
+            onclick="switchTab('windshield', this)">
+            Windshield
+        </button>
+
+        <button
+            class="tab-btn"
+            onclick="switchTab('ev', this)">
+            EV Battery
+        </button>
+
+        <button
+            class="tab-btn"
+            onclick="switchTab('regulations', this)">
+            Global Laws
+        </button>
+
+    </div>
+
+
+    <!-- MEDIA -->
+
+    <div class="media-viewer">
+
+        <div class="video-container">
+
+            <video
+                id="dashboardVideo"
+                autoplay
+                muted
+                playsinline>
+
+                <source
+                    id="videoSource"
+                    src="sample.mp4"
+                    type="video/mp4">
+
+            </video>
+
+            <div
+                id="videoFileLabel"
+                class="video-status-overlay">
+
+                RUNNING TRIAL: sample.mp4
 
             </div>
-
-
-            <!-- DIGITAL DISPLAY -->
-
-            <div class="digital-display">
-
-                <div
-                    id="digitalSpeed"
-                    class="current-speed">
-                    0
-                </div>
-
-                <span class="unit">
-                    km/h
-                </span>
-
-            </div>
-
-
-            <!-- INPUT -->
-
-            <div class="input-group">
-
-                <input
-                    type="number"
-                    id="speedInput"
-                    min="0"
-                    max="300"
-                    placeholder="Enter Speed (0-300)"
-                    value="0"
-                >
-
-                <div
-                    id="errorBox"
-                    class="error-message">
-                </div>
-
-            </div>
-
 
         </div>
 
 
+        <div class="media-caption-box">
 
-        <!-- ==================================================
-             RIGHT PANEL
-        ================================================== -->
+            <h4 id="captionTitle">
+                Tyres Status
+            </h4>
 
-        <div class="right-panel">
-
-
-            <!-- HEADER -->
-
-            <div class="panel-header">
-
-                <h2>
-                    Real-World Vehicle Limits
-                </h2>
-
-                <p>
-                    Select a part to analyze how daily driving
-                    components handle high speeds.
-                </p>
-
-            </div>
-
-
-            <!-- TABS -->
-
-            <div class="tab-bar">
-
-                <button
-                    class="tab-btn active"
-                    id="btn-tyres"
-                    onclick="switchTab('tyres', this)">
-                    Tyres
-                </button>
-
-
-                <button
-                    class="tab-btn"
-                    id="btn-brakes"
-                    onclick="switchTab('brakes', this)">
-                    Brakes
-                </button>
-
-
-                <button
-                    class="tab-btn"
-                    id="btn-bolts"
-                    onclick="switchTab('bolts', this)">
-                    Wheel Bolts
-                </button>
-
-
-                <button
-                    class="tab-btn"
-                    id="btn-windshield"
-                    onclick="switchTab('windshield', this)">
-                    Windshield
-                </button>
-
-
-                <button
-                    class="tab-btn"
-                    id="btn-ev"
-                    onclick="switchTab('ev', this)">
-                    EV Battery
-                </button>
-
-
-                <button
-                    class="tab-btn"
-                    id="btn-regulations"
-                    onclick="switchTab('regulations', this)">
-                    Global Laws
-                </button>
-
-            </div>
-
-
-            <!-- MEDIA VIEWER -->
-
-            <div class="media-viewer">
-
-
-                <div class="video-container">
-
-                    <video
-                        id="dashboardVideo"
-                        autoplay
-                        muted
-                        playsinline>
-
-                        <source
-                            id="videoSource"
-                            src="sample.mp4"
-                            type="video/mp4">
-
-                    </video>
-
-
-                    <div
-                        id="videoFileLabel"
-                        class="video-status-overlay">
-
-                        RUNNING TRIAL: sample.mp4
-
-                    </div>
-
-                </div>
-
-
-                <div class="media-caption-box">
-
-                    <h4 id="captionTitle">
-                        Tyres Status
-                    </h4>
-
-                    <p id="captionText">
-                        Tyres are one of the most important
-                        components when vehicle speed increases.
-                    </p>
-
-                </div>
-
-
-            </div>
-
+            <p id="captionText">
+                Tyres are one of the most important
+                components when vehicle speed increases.
+            </p>
 
         </div>
 
     </div>
 
 
+</div>
 
-    <!-- ==================================================
-         JAVASCRIPT
-    ================================================== -->
-
-    <script>
+</div>
 
 
-        /* ==================================================
-           SPEEDOMETER
-        ================================================== */
 
-        const speedInput =
-            document.getElementById("speedInput");
+<script>
 
-        const digitalSpeed =
-            document.getElementById("digitalSpeed");
+/* =====================================================
+   SPEEDOMETER
+===================================================== */
 
-        const needle =
-            document.getElementById("needle");
+const speedInput =
+    document.getElementById("speedInput");
 
-        const errorBox =
-            document.getElementById("errorBox");
+const digitalSpeed =
+    document.getElementById("digitalSpeed");
+
+const needle =
+    document.getElementById("needle");
+
+const errorBox =
+    document.getElementById("errorBox");
+
+
+/*
+    Gauge:
+
+    0 km/h   = -120 degrees
+    150 km/h = 0 degrees
+    300 km/h = +120 degrees
+*/
+
+
+function updateSpeed(speed) {
+
+    const minAngle = -120;
+
+    const maxAngle = 120;
+
+
+    /*
+        Convert 0-300
+        into 0-1.
+    */
+
+    const percentage =
+        speed / 300;
+
+
+    /*
+        Convert percentage
+        to angle.
+    */
+
+    const angle =
+        minAngle +
+        (percentage *
+        (maxAngle - minAngle));
+
+
+    /*
+        Apply rotation.
+    */
+
+    needle.style.transform =
+        `rotate(${angle}deg)`;
+
+
+    /*
+        Update number.
+    */
+
+    digitalSpeed.textContent =
+        speed;
+}
+
+
+
+/* =====================================================
+   INPUT
+===================================================== */
+
+speedInput.addEventListener(
+    "input",
+    function () {
+
+        let speed =
+            Number(this.value);
 
 
         /*
-            SPEEDOMETER ANGLE RANGE
-
-            0 km/h
-                ↓
-            -120 degrees
-
-            150 km/h
-                ↓
-            0 degrees
-
-            300 km/h
-                ↓
-            +120 degrees
+            Empty input.
         */
 
-        const MIN_SPEED = 0;
+        if (this.value === "") {
 
-        const MAX_SPEED = 300;
+            updateSpeed(0);
 
-        const MIN_ANGLE = -120;
+            errorBox.textContent = "";
 
-        const MAX_ANGLE = 120;
-
-
-        /* ==================================================
-           UPDATE SPEEDOMETER
-        ================================================== */
-
-        function updateSpeedometer(speed) {
-
-
-            /*
-                Convert speed to percentage.
-
-                Example:
-
-                0   = 0%
-                150 = 50%
-                300 = 100%
-            */
-
-            const percentage =
-                (speed - MIN_SPEED) /
-                (MAX_SPEED - MIN_SPEED);
-
-
-            /*
-                Convert percentage
-                into needle angle.
-            */
-
-            const angle =
-                MIN_ANGLE +
-                percentage *
-                (MAX_ANGLE - MIN_ANGLE);
-
-
-            /*
-                Rotate needle.
-            */
-
-            needle.style.transform =
-                `translate(-50%, -100%)
-                 rotate(${angle}deg)`;
-
-
-            /*
-                Update digital display.
-            */
-
-            digitalSpeed.textContent =
-                speed;
+            return;
         }
 
 
-        /* ==================================================
-           SPEED INPUT
-        ================================================== */
+        /*
+            Below minimum.
+        */
 
-        speedInput.addEventListener(
-            "input",
-            function () {
+        if (speed < 0) {
 
+            speed = 0;
 
-                /*
-                    If input is empty.
-                */
-
-                if (this.value === "") {
-
-                    errorBox.textContent = "";
-
-                    digitalSpeed.textContent = "0";
-
-                    updateSpeedometer(0);
-
-                    return;
-                }
+            errorBox.textContent =
+                "Minimum speed is 0 km/h.";
+        }
 
 
-                const speed =
-                    Number(this.value);
+        /*
+            Above maximum.
+        */
+
+        else if (speed > 300) {
+
+            speed = 300;
+
+            errorBox.textContent =
+                "Maximum speed is 300 km/h.";
+        }
 
 
-                /*
-                    Check minimum.
-                */
+        /*
+            Valid value.
+        */
 
-                if (speed < 0) {
+        else {
 
-                    errorBox.textContent =
-                        "Speed cannot be below 0 km/h.";
-
-                    updateSpeedometer(0);
-
-                    return;
-                }
+            errorBox.textContent = "";
+        }
 
 
-                /*
-                    Check maximum.
-                */
+        updateSpeed(speed);
 
-                if (speed > 300) {
-
-                    errorBox.textContent =
-                        "Maximum speed is 300 km/h.";
-
-                    updateSpeedometer(300);
-
-                    return;
-                }
+    }
+);
 
 
-                /*
-                    Valid value.
-                */
+/* =====================================================
+   INITIALIZE
+===================================================== */
 
-                errorBox.textContent = "";
+updateSpeed(0);
 
-                updateSpeedometer(speed);
 
-            }
+
+/* =====================================================
+   CREATE TICK MARKS
+===================================================== */
+
+const ticks =
+    document.getElementById("ticks");
+
+
+for (
+    let i = 0;
+    i <= 30;
+    i++
+) {
+
+    /*
+        Calculate angle.
+    */
+
+    const angle =
+        -120 +
+        (i * 8);
+
+
+    /*
+        Convert degrees to radians.
+    */
+
+    const radians =
+        angle *
+        Math.PI /
+        180;
+
+
+    /*
+        Outer radius.
+    */
+
+    const outerRadius = 125;
+
+
+    /*
+        Inner radius.
+    */
+
+    const innerRadius =
+        i % 5 === 0
+        ? 112
+        : 117;
+
+
+    /*
+        Center.
+    */
+
+    const cx = 160;
+    const cy = 160;
+
+
+    /*
+        Outer point.
+    */
+
+    const x1 =
+        cx +
+        outerRadius *
+        Math.sin(radians);
+
+    const y1 =
+        cy -
+        outerRadius *
+        Math.cos(radians);
+
+
+    /*
+        Inner point.
+    */
+
+    const x2 =
+        cx +
+        innerRadius *
+        Math.sin(radians);
+
+    const y2 =
+        cy -
+        innerRadius *
+        Math.cos(radians);
+
+
+    /*
+        Create SVG line.
+    */
+
+    const line =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "line"
         );
 
 
-        /* ==================================================
-           INITIAL SPEED
-        ================================================== */
+    line.setAttribute(
+        "x1",
+        x1
+    );
 
-        updateSpeedometer(0);
+    line.setAttribute(
+        "y1",
+        y1
+    );
 
+    line.setAttribute(
+        "x2",
+        x2
+    );
 
+    line.setAttribute(
+        "y2",
+        y2
+    );
 
-        /* ==================================================
-           TAB SYSTEM
-        ================================================== */
 
-        function switchTab(tabName, button) {
+    ticks.appendChild(line);
+}
 
 
-            /*
-                Remove active state
-                from all buttons.
-            */
 
-            document
-                .querySelectorAll(".tab-btn")
-                .forEach(btn => {
+/* =====================================================
+   TAB SYSTEM
+===================================================== */
 
-                    btn.classList.remove("active");
+function switchTab(
+    tabName,
+    button
+) {
 
-                });
+    /*
+        Remove active class.
+    */
 
+    document
+        .querySelectorAll(".tab-btn")
+        .forEach(
+            btn =>
+                btn.classList.remove("active")
+        );
 
-            /*
-                Activate clicked button.
-            */
 
-            button.classList.add("active");
+    /*
+        Activate selected tab.
+    */
 
+    button.classList.add("active");
 
-            /*
-                Video element.
-            */
 
-            const video =
-                document.getElementById(
-                    "dashboardVideo"
-                );
+    /*
+        Video files.
+    */
 
+    const videos = {
 
-            /*
-                Video source.
-                Change these filenames
-                to your actual videos.
-            */
+        tyres:
+            "sample.mp4",
 
-            const videos = {
+        brakes:
+            "brakes.mp4",
 
-                tyres: "sample.mp4",
+        bolts:
+            "bolts.mp4",
 
-                brakes: "brakes.mp4",
+        windshield:
+            "windshield.mp4",
 
-                bolts: "bolts.mp4",
+        ev:
+            "ev-battery.mp4",
 
-                windshield: "windshield.mp4",
+        regulations:
+            "global-laws.mp4"
+    };
 
-                ev: "ev-battery.mp4",
 
-                regulations: "global-laws.mp4"
+    /*
+        Titles.
+    */
 
-            };
+    const titles = {
 
+        tyres:
+            "Tyres Status",
 
-            /*
-                Captions.
-            */
+        brakes:
+            "Brakes Status",
 
-            const titles = {
+        bolts:
+            "Wheel Bolts Status",
 
-                tyres: "Tyres Status",
+        windshield:
+            "Windshield Status",
 
-                brakes: "Brakes Status",
+        ev:
+            "EV Battery Status",
 
-                bolts: "Wheel Bolts Status",
+        regulations:
+            "Global Laws"
+    };
 
-                windshield: "Windshield Status",
 
-                ev: "EV Battery Status",
+    /*
+        Descriptions.
+    */
 
-                regulations: "Global Laws"
+    const descriptions = {
 
-            };
+        tyres:
+            "Tyres are one of the most important components when vehicle speed increases.",
 
+        brakes:
+            "Braking systems must dissipate increasing amounts of kinetic energy as speed rises.",
 
-            const descriptions = {
+        bolts:
+            "Wheel bolts secure the wheel assembly and must withstand significant loads.",
 
-                tyres:
-                    "Tyres are one of the most important components when vehicle speed increases.",
+        windshield:
+            "Windshield construction contributes to occupant protection.",
 
-                brakes:
-                    "Braking systems must dissipate increasing amounts of kinetic energy as speed rises.",
+        ev:
+            "EV batteries and thermal management systems must handle demanding operating conditions.",
 
-                bolts:
-                    "Wheel bolts secure the wheel assembly and must withstand significant loads.",
+        regulations:
+            "Speed regulations and vehicle requirements vary across different regions."
+    };
 
-                windshield:
-                    "Windshield construction and glass strength contribute to occupant protection.",
 
-                ev:
-                    "EV batteries and their thermal management systems must handle demanding operating conditions.",
+    /*
+        Video.
+    */
 
-                regulations:
-                    "Speed regulations and vehicle requirements vary across different regions."
-            };
+    const video =
+        document.getElementById(
+            "dashboardVideo"
+        );
 
+    const source =
+        document.getElementById(
+            "videoSource"
+        );
 
-            /*
-                Change video source.
-            */
 
-            const source =
-                document.getElementById(
-                    "videoSource"
-                );
+    source.src =
+        videos[tabName];
 
 
-            source.src =
-                videos[tabName];
+    video.load();
 
 
-            /*
-                Reload video.
-            */
+    video.play().catch(
+        () => {}
+    );
 
-            video.load();
 
+    /*
+        Label.
+    */
 
-            /*
-                Play once.
-            */
+    document.getElementById(
+        "videoFileLabel"
+    ).textContent =
+        "RUNNING TRIAL: " +
+        videos[tabName];
 
-            video.play().catch(
-                function () {
-                    console.log(
-                        "Video autoplay prevented."
-                    );
-                }
-            );
 
+    /*
+        Caption.
+    */
 
-            /*
-                Update filename label.
-            */
+    document.getElementById(
+        "captionTitle"
+    ).textContent =
+        titles[tabName];
 
-            document.getElementById(
-                "videoFileLabel"
-            ).textContent =
-                "RUNNING TRIAL: " +
-                videos[tabName];
 
+    document.getElementById(
+        "captionText"
+    ).textContent =
+        descriptions[tabName];
 
-            /*
-                Update title.
-            */
+}
 
-            document.getElementById(
-                "captionTitle"
-            ).textContent =
-                titles[tabName];
-
-
-            /*
-                Update description.
-            */
-
-            document.getElementById(
-                "captionText"
-            ).textContent =
-                descriptions[tabName];
-
-        }
-
-
-    </script>
+</script>
 
 </body>
-
 </html>
 ```
