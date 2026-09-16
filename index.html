@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lighting Setup Auditor</title>
+    <title>Showroom Handover Shield - Lighting Setup Auditor</title>
+    <!-- Open Source UI Stylesheet Core -->
     <style>
         :root {
             --bg-color: #0f172a;
@@ -11,6 +12,7 @@
             --text-color: #f1f5f9;
             --text-muted: #94a3b8;
             --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
             --border-color: #334155;
             --danger-color: #f87171;
             --safe-color: #4ade80;
@@ -21,7 +23,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -31,11 +33,31 @@
             padding: 16px;
             display: flex;
             justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
         .container {
             width: 100%;
             max-width: 480px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        header p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 2px;
         }
 
         .card {
@@ -47,7 +69,7 @@
         }
 
         .heading {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -57,10 +79,10 @@
             padding-bottom: 8px;
         }
 
-        /* Seek Bar Container */
+        /* Seek Bar Custom Logic styling */
         .slider-container {
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .slider {
@@ -74,7 +96,7 @@
             cursor: pointer;
         }
 
-        /* Default pin styling centered */
+        /* Default pin styling centered neutral gray */
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -92,18 +114,19 @@
             background: var(--primary);
         }
 
-        /* Split Columns Grid */
+        /* Split Visual Columns Grid */
         .columns-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
+            margin-bottom: 24px;
         }
 
         .column {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            opacity: 0.5;
+            gap: 6px;
+            opacity: 0.35;
             transition: opacity 0.2s ease;
         }
 
@@ -112,25 +135,24 @@
         }
 
         .item {
-            padding: 10px 12px;
+            padding: 8px 12px;
             background-color: #162032;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--text-muted);
-            transition: all 0.2s ease;
         }
 
         .column.active.lhs-zone .item {
             border-color: var(--danger-color);
-            background-color: rgba(248, 113, 113, 0.08);
+            background-color: rgba(248, 113, 113, 0.06);
             color: var(--danger-color);
         }
 
         .column.active.rhs-zone .item {
             border-color: var(--safe-color);
-            background-color: rgba(74, 222, 128, 0.08);
+            background-color: rgba(74, 222, 128, 0.06);
             color: var(--safe-color);
             height: 100%;
             display: flex;
@@ -138,32 +160,104 @@
             justify-content: center;
         }
 
-        /* Display Box */
-        .output-box {
-            margin-top: 20px;
+        /* Centered Core Dropdown Framework Elements */
+        .dropdown-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .dropdown-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dropdown-label {
+            font-size: 0.8rem;
+            font-weight: 750;
+            color: #fff;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .custom-select {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: #0f172a;
+            outline: none;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+
+        .custom-select:focus {
+            border-color: var(--primary);
+        }
+
+        /* Dynamic Visual Shield Output Panel */
+        .dynamic-panel {
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .danger-border { border-left: 4px solid var(--danger-color); }
+        .safe-border { border-left: 4px solid var(--safe-color); }
+
+        .panel-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .dynamic-panel p {
+            font-size: 0.85rem;
+            color: #fff;
+            white-space: pre-line;
+            line-height: 1.45;
+        }
+
+        .status-box {
             padding: 12px;
             background-color: #0f172a;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-align: center;
             color: var(--text-muted);
+            margin-bottom: 20px;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <header>
+        <h1>Showroom Handover Shield</h1>
+        <p>GitHub Repository Alpha Release v1.0.0</p>
+    </header>
+
     <div class="card">
         <div class="heading">Lighting set-up</div>
         
         <div class="slider-container">
-            <!-- min=0 (LHS), max=2 (RHS), default value=1 (exact center pin) -->
+            <!-- Universal State Input: 0=LHS, 1=Forced Center Neutral, 2=RHS -->
             <input type="range" id="lighting-slider" class="slider" min="0" max="2" value="1" oninput="updateSetup()">
         </div>
 
         <div class="columns-grid">
-            <!-- LHS Segment -->
+            <!-- Left-Hand Side Column Array -->
             <div id="lhs-column" class="column">
                 <div class="item">Showroom</div>
                 <div class="item">Warehouse</div>
@@ -171,46 +265,46 @@
                 <div class="item">Shadow / Overcast</div>
             </div>
 
-            <!-- RHS Segment -->
+            <!-- Right-Hand Side Column Array -->
             <div id="rhs-column" class="column">
                 <div class="item rhs-item">Daylight</div>
             </div>
         </div>
 
-        <div id="status-message" class="output-box">
-            Awaiting input. Move the seek bar pin to the left or right to proceed.
+        <div id="status-message" class="status-box">
+            Awaiting input. Move the center seek bar pin to the left or right to initialize calculation engine.
         </div>
-    </div>
-</div>
 
-<script>
-    function updateSetup() {
-        const slider = document.getElementById('lighting-slider');
-        const val = slider.value;
-        const lhs = document.getElementById('lhs-column');
-        const rhs = document.getElementById('rhs-column');
-        const msg = document.getElementById('status-message');
+        <!-- Central Structural Dropdown Array -->
+        <div class="dropdown-stack">
+            <div class="dropdown-group">
+                <div class="dropdown-label">📐 Structural & Body Alignment</div>
+                <select id="select-structural" class="custom-select" onchange="evaluateSelection()">
+                    <option value="warping">High-Tension Panel Warping</option>
+                    <option value="fractures">A-Pillar Crushing Stress Fractures</option>
+                    <option value="hail">Transit Hail Dings</option>
+                    <option value="waves">Subsurface Panel Waves</option>
+                </select>
+            </div>
 
-        // Clear active classes
-        lhs.className = "column";
-        rhs.className = "column";
-        slider.classList.add('moved');
+            <div class="dropdown-group">
+                <div class="dropdown-label">🎨 Exterior Paint & Coating Deficiencies</div>
+                <select id="select-paint" class="custom-select" onchange="evaluateSelection()">
+                    <option value="halos">Buffer Halos & Holograms</option>
+                    <option value="scrapes">Guardrail Door-Crease Scrapes</option>
+                    <option value="whiplash">Tie-Down Chain Whiplash</option>
+                    <option value="masks">Silicone-Glaze Scratch Masks</option>
+                    <option value="pens">Smart Paint-Pen Fillers</option>
+                    <option value="matte">Matte Surface Gloss Polishing</option>
+                    <option value="peel">Factory Orange-Peel Mismatch</option>
+                    <option value="fallout">Industrial Fallout Inclusions</option>
+                    <option value="etching">Acid Rain & Bird Dropping Etching</option>
+                </select>
+            </div>
 
-        if (val == 1) {
-            // Reverted back to exact center pin
-            slider.classList.remove('moved');
-            msg.textContent = "Awaiting input. Move the seek bar pin to the left or right to proceed.";
-        } else if (val == 0) {
-            // Dragged to LHS
-            lhs.classList.add('active', 'lhs-zone');
-            msg.textContent = "Sub-optimal environment selected. Countermeasures loaded.";
-        } else if (val == 2) {
-            // Dragged to RHS
-            rhs.classList.add('active', 'rhs-zone');
-            msg.textContent = "Optimal daylight environment selected. Safe check conditions.";
-        }
-    }
-</script>
-
-</body>
-</html>
+            <div class="dropdown-group">
+                <div class="dropdown-label">💎 Glass, Wheels & Lower Trim Elements</div>
+                <select id="select-glass" class="custom-select" onchange="evaluateSelection()">
+                    <option value="panoramic">Panoramic Roof Stress Fractures</option>
+                    <option value="bumper">Under-Bumper Scrape Gouges</option>
+                    <option value="alloy">Alloy Wheel Rim Lip Grazes</option>
