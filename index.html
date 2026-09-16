@@ -3,47 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <title>Transit Damage Detection Simulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f4f4f4;
       margin: 0;
-      padding: 20px;
+      padding: 10px;
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 30px;
+      margin: 15px 0;
+      font-size: 1.2rem;
     }
 
     .slider-container {
       display: flex;
-      align-items: center;
       justify-content: center;
-      margin-bottom: 10px;
+      margin: 10px 0;
     }
 
     input[type=range] {
-      width: 80%;
-      margin: 20px auto;
-      display: block;
+      width: 100%;
+      height: 30px;
+      -webkit-appearance: none;
+      background: transparent;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 25px;
+      width: 25px;
+      border-radius: 50%;
+      background: #007bff;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+      height: 8px;
+      background: #ddd;
+      border-radius: 4px;
     }
 
     .labels {
       display: flex;
-      justify-content: space-between;
-      width: 80%;
-      margin: 0 auto;
-      font-weight: bold;
-      font-size: 14px;
+      overflow-x: auto;
+      white-space: nowrap;
+      margin: 5px 0;
+      font-size: 0.8rem;
+    }
+
+    .labels span {
+      flex: 0 0 auto;
+      margin-right: 15px;
     }
 
     .category {
-      margin: 20px 0;
+      margin: 10px 0;
       background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .category h2 {
@@ -52,13 +73,14 @@
       justify-content: space-between;
       cursor: pointer;
       margin: 0;
+      font-size: 1rem;
     }
 
     .light {
-      width: 15px;
-      height: 15px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      margin-left: 10px;
+      margin-left: 8px;
     }
 
     .red {
@@ -85,18 +107,20 @@
 
     .dropdown {
       display: none;
-      margin-top: 10px;
-      padding-left: 20px;
+      margin-top: 8px;
+      padding-left: 15px;
+      font-size: 0.9rem;
     }
 
     .dropdown ul {
       list-style-type: disc;
+      padding-left: 15px;
     }
 
     .info {
       text-align: center;
-      margin-top: 30px;
-      font-size: 14px;
+      margin-top: 15px;
+      font-size: 0.8rem;
       color: #555;
     }
   </style>
@@ -113,7 +137,7 @@
     <span>Overshadow</span>
     <span>Indoor/Warehouse</span>
     <span>Showroom</span>
-    <span>UV Light Inspection</span>
+    <span>UV Light</span>
     <span>Daylight</span>
   </div>
 
@@ -126,7 +150,7 @@
     <div id="body" class="dropdown">
       <ul>
         <li>High-Tension Panel Warping</li>
-        <li>A-Pillar Crushing Stress Fractures</li>
+        <li>A-Pillar Stress Fractures</li>
         <li>Transit Hail Dings</li>
         <li>Subsurface Panel Waves</li>
       </ul>
@@ -148,7 +172,7 @@
         <li>Matte Surface Gloss Polishing</li>
         <li>Factory Orange-Peel Mismatch</li>
         <li>Industrial Fallout Inclusions</li>
-        <li>Acid Rain & Bird Dropping Etching</li>
+        <li>Acid Rain Etching</li>
       </ul>
     </div>
   </div>
@@ -163,7 +187,7 @@
         <li>Panoramic Roof Stress Fractures</li>
         <li>Under-Bumper Scrape Gouges</li>
         <li>Alloy Wheel Rim Lip Grazes</li>
-        <li>UV Trim Fading & Dullness</li>
+        <li>UV Trim Fading</li>
       </ul>
     </div>
   </div>
@@ -181,7 +205,6 @@
       const value = parseInt(slider.value);
       categories.forEach(id => {
         const el = document.getElementById(id);
-        // Only "Daylight" (value=5) and "UV Light Inspection" (value=4) show green
         if (value >= 4) {
           el.className = 'light green';
         } else {
@@ -196,8 +219,6 @@
     }
 
     slider.addEventListener('input', updateLights);
-
-    // Initialize lights
     updateLights();
   </script>
 </body>
