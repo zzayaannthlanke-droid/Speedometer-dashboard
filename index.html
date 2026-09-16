@@ -107,6 +107,10 @@
             display: block;
         }
 
+        .control-group {
+            margin-bottom: 20px;
+        }
+
         .control-group label.main-label {
             display: block;
             font-weight: 800;
@@ -121,7 +125,8 @@
 
         .slider-container {
             position: relative;
-            margin-bottom: 4px;
+            margin-bottom: 16px;
+            padding: 0 4px;
         }
 
         .slider {
@@ -156,12 +161,12 @@
             transform: scale(1.15);
         }
 
-        /* Stacking grid for comparative UI alignment */
+        /* Side-by-Side column structure */
         .split-labels-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-top: 16px;
+            margin-top: 14px;
         }
 
         .side-column {
@@ -190,7 +195,15 @@
             transition: all 0.15s ease;
         }
 
-        /* Dynamic styles triggered by controller values */
+        .daylight-box {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Active styling rules based on thumb placement */
         .side-column.danger-active .side-heading {
             color: var(--danger-color);
         }
@@ -356,8 +369,3 @@
     </header>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('physical')">🚗 Physical</button>
-        <button class="tab-btn" onclick="switchTab('digital')">💻 Digital</button>
-        <button class="tab-btn" onclick="switchTab('financial')">💶 Financial</button>
-    </div>
-
