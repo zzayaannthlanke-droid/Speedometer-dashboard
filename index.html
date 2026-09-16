@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Showroom Handover Shield - Lighting Setup Auditor</title>
-    <!-- Open Source UI Stylesheet Core -->
+    <title>Showroom Handover Shield</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -12,7 +11,6 @@
             --text-color: #f1f5f9;
             --text-muted: #94a3b8;
             --primary: #38bdf8;
-            --primary-hover: #0ea5e9;
             --border-color: #334155;
             --danger-color: #f87171;
             --safe-color: #4ade80;
@@ -23,7 +21,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -68,18 +66,80 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
 
-        .heading {
-            font-size: 0.95rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #fff;
+        /* Combined Flex Header with Real-Time Lights */
+        .heading-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 8px;
         }
 
-        /* Seek Bar Custom Logic styling */
+        .heading-text {
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+
+        /* Inline Status Light indicators */
+        .inline-indicators {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .indicator-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            opacity: 0.3;
+            transition: opacity 0.2s ease;
+        }
+
+        .light-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--neutral-grey);
+        }
+
+        /* Blinking Keyframe Animations */
+        @keyframes pulse-red {
+            0% { background-color: #ef4444; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { background-color: #ef4444; box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { background-color: #ef4444; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        @keyframes pulse-green {
+            0% { background-color: #22c55e; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { background-color: #22c55e; box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+            100% { background-color: #22c55e; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        .indicator-pill.danger-active {
+            opacity: 1;
+            color: var(--danger-color);
+        }
+        .indicator-pill.danger-active .light-dot {
+            animation: pulse-red 1.2s infinite;
+        }
+
+        .indicator-pill.safe-active {
+            opacity: 1;
+            color: var(--safe-color);
+        }
+        .indicator-pill.safe-active .light-dot {
+            animation: pulse-green 1.2s infinite;
+        }
+
+        /* Seek bar control layout styling */
         .slider-container {
             width: 100%;
             margin-bottom: 24px;
@@ -96,7 +156,6 @@
             cursor: pointer;
         }
 
-        /* Default pin styling centered neutral gray */
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -114,7 +173,6 @@
             background: var(--primary);
         }
 
-        /* Split Visual Columns Grid */
         .columns-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -160,25 +218,17 @@
             justify-content: center;
         }
 
-        /* Centered Core Dropdown Framework Elements */
+        /* Dropdown Stack structural configuration */
         .dropdown-stack {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 16px;
             margin-bottom: 20px;
         }
 
         .dropdown-group {
             display: flex;
             flex-direction: column;
-        }
-
-        .dropdown-label {
-            font-size: 0.8rem;
-            font-weight: 750;
-            color: #fff;
-            margin-bottom: 6px;
-            letter-spacing: 0.3px;
         }
 
         .custom-select {
@@ -192,14 +242,13 @@
             color: #fff;
             font-weight: 600;
             cursor: pointer;
-            transition: border-color 0.15s;
         }
 
         .custom-select:focus {
             border-color: var(--primary);
         }
 
-        /* Dynamic Visual Shield Output Panel */
+        /* Output Diagnostics Box framework */
         .dynamic-panel {
             background-color: #0f172a;
             border: 1px solid var(--border-color);
@@ -245,19 +294,25 @@
 <div class="container">
     <header>
         <h1>Showroom Handover Shield</h1>
-        <p>GitHub Repository Alpha Release v1.0.0</p>
+        <p>GitHub Repository Alpha Release v1.2.0</p>
     </header>
 
     <div class="card">
-        <div class="heading">Lighting set-up</div>
+        
+        <!-- MAIN HEADING ROW: LIGHTING SET-UP WITH INLINE LIGHT PILLS -->
+        <div class="heading-row">
+            <div class="heading-text">Lighting set-up</div>
+            <div class="inline-indicators">
+                <div class="indicator-pill danger-pill"><div class="light-dot"></div>cannot be detected</div>
+                <div class="indicator-pill safe-pill"><div class="light-dot"></div>can be detected</div>
+            </div>
+        </div>
         
         <div class="slider-container">
-            <!-- Universal State Input: 0=LHS, 1=Forced Center Neutral, 2=RHS -->
             <input type="range" id="lighting-slider" class="slider" min="0" max="2" value="1" oninput="updateSetup()">
         </div>
 
         <div class="columns-grid">
-            <!-- Left-Hand Side Column Array -->
             <div id="lhs-column" class="column">
                 <div class="item">Showroom</div>
                 <div class="item">Warehouse</div>
@@ -265,46 +320,19 @@
                 <div class="item">Shadow / Overcast</div>
             </div>
 
-            <!-- Right-Hand Side Column Array -->
             <div id="rhs-column" class="column">
                 <div class="item rhs-item">Daylight</div>
             </div>
         </div>
 
         <div id="status-message" class="status-box">
-            Awaiting input. Move the center seek bar pin to the left or right to initialize calculation engine.
+            Awaiting input. Move the center seek bar pin to the left or right to initialize status indicators.
         </div>
 
-        <!-- Central Structural Dropdown Array -->
+        <!-- DROPDOWN STACK: EACH SECURED WITH AN IDENTICAL REAL-TIME INLINE LIGHT SETUP -->
         <div class="dropdown-stack">
+            
             <div class="dropdown-group">
-                <div class="dropdown-label">📐 Structural & Body Alignment</div>
-                <select id="select-structural" class="custom-select" onchange="evaluateSelection()">
-                    <option value="warping">High-Tension Panel Warping</option>
-                    <option value="fractures">A-Pillar Crushing Stress Fractures</option>
-                    <option value="hail">Transit Hail Dings</option>
-                    <option value="waves">Subsurface Panel Waves</option>
-                </select>
-            </div>
-
-            <div class="dropdown-group">
-                <div class="dropdown-label">🎨 Exterior Paint & Coating Deficiencies</div>
-                <select id="select-paint" class="custom-select" onchange="evaluateSelection()">
-                    <option value="halos">Buffer Halos & Holograms</option>
-                    <option value="scrapes">Guardrail Door-Crease Scrapes</option>
-                    <option value="whiplash">Tie-Down Chain Whiplash</option>
-                    <option value="masks">Silicone-Glaze Scratch Masks</option>
-                    <option value="pens">Smart Paint-Pen Fillers</option>
-                    <option value="matte">Matte Surface Gloss Polishing</option>
-                    <option value="peel">Factory Orange-Peel Mismatch</option>
-                    <option value="fallout">Industrial Fallout Inclusions</option>
-                    <option value="etching">Acid Rain & Bird Dropping Etching</option>
-                </select>
-            </div>
-
-            <div class="dropdown-group">
-                <div class="dropdown-label">💎 Glass, Wheels & Lower Trim Elements</div>
-                <select id="select-glass" class="custom-select" onchange="evaluateSelection()">
-                    <option value="panoramic">Panoramic Roof Stress Fractures</option>
-                    <option value="bumper">Under-Bumper Scrape Gouges</option>
-                    <option value="alloy">Alloy Wheel Rim Lip Grazes</option>
+                <div class="heading-row">
+                    <div class="heading-text">📐 Structural & Body Alignment</div>
+                    <div class="inline-indicators">
