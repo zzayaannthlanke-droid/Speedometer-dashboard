@@ -20,7 +20,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+    }
+
+    input[type=range] {
+      width: 80%;
+      margin: 20px auto;
+      display: block;
     }
 
     .labels {
@@ -29,12 +35,7 @@
       width: 80%;
       margin: 0 auto;
       font-weight: bold;
-    }
-
-    input[type=range] {
-      width: 80%;
-      margin: 20px auto;
-      display: block;
+      font-size: 14px;
     }
 
     .category {
@@ -104,12 +105,16 @@
   <h1>Transit Damage Detection Simulator</h1>
 
   <div class="slider-container">
-    <input type="range" id="lightSlider" min="0" max="100" value="50">
+    <input type="range" id="lightSlider" min="0" max="5" value="0" step="1">
   </div>
 
   <div class="labels">
-    <span>LHS: Indoor / Warehouse / Showroom / Dim / Shadow</span>
-    <span>RHS: Broad Daylight</span>
+    <span>Dim</span>
+    <span>Overshadow</span>
+    <span>Indoor/Warehouse</span>
+    <span>Showroom</span>
+    <span>UV Light Inspection</span>
+    <span>Daylight</span>
   </div>
 
   <!-- Categories -->
@@ -173,13 +178,14 @@
     const categories = ['bodyLight', 'paintLight', 'glassLight'];
 
     function updateLights() {
-      const value = slider.value;
+      const value = parseInt(slider.value);
       categories.forEach(id => {
         const el = document.getElementById(id);
-        if (value < 50) {
-          el.className = 'light red';
-        } else {
+        // Only "Daylight" (value=5) and "UV Light Inspection" (value=4) show green
+        if (value >= 4) {
           el.className = 'light green';
+        } else {
+          el.className = 'light red';
         }
       });
     }
