@@ -1,336 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Showroom Handover Shield</title>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f1f5f9;
-            --text-muted: #94a3b8;
-            --primary: #38bdf8;
-            --border-color: #334155;
-            --danger-color: #f87171;
-            --safe-color: #4ade80;
-            --neutral-grey: #64748b;
-        }
+  <meta charset="UTF-8">
+  <title>Transit Damage Detection Simulator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
 
-        .container {
-            width: 100%;
-            max-width: 480px;
-        }
+    .labels {
+      display: flex;
+      justify-content: space-between;
+      width: 80%;
+      margin: 0 auto;
+      font-weight: bold;
+    }
 
-        header {
-            text-align: center;
-            margin-bottom: 16px;
-        }
+    input[type=range] {
+      width: 80%;
+      margin: 20px auto;
+      display: block;
+    }
 
-        header h1 {
-            font-size: 1.2rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
+    .category {
+      margin: 20px 0;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-        header p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
+    .category h2 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      margin: 0;
+    }
 
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-        }
+    .light {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
 
-        /* Flex Header with Status Lights */
-        .heading-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-        }
+    .red {
+      background: red;
+      animation: blinkRed 1s infinite;
+    }
 
-        .heading-text {
-            font-size: 0.85rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #fff;
-        }
+    .green {
+      background: green;
+      animation: blinkGreen 1s infinite;
+    }
 
-        .inline-indicators {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
+    @keyframes blinkRed {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
 
-        .indicator-pill {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            opacity: 0.25;
-            transition: opacity 0.2s ease;
-        }
+    @keyframes blinkGreen {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
 
-        .light-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--neutral-grey);
-        }
+    .dropdown {
+      display: none;
+      margin-top: 10px;
+      padding-left: 20px;
+    }
 
-        /* Pulsing/Blinking Animation Engine */
-        @keyframes blink-red {
-            0% { background-color: #ef4444; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { background-color: #ef4444; box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-            100% { background-color: #ef4444; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
+    .dropdown ul {
+      list-style-type: disc;
+    }
 
-        @keyframes blink-green {
-            0% { background-color: #22c55e; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-            70% { background-color: #22c55e; box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-            100% { background-color: #22c55e; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
-
-        .indicator-pill.danger-active {
-            opacity: 1;
-            color: var(--danger-color);
-        }
-        .indicator-pill.danger-active .light-dot {
-            animation: blink-red 1.2s infinite;
-        }
-
-        .indicator-pill.safe-active {
-            opacity: 1;
-            color: var(--safe-color);
-        }
-        .indicator-pill.safe-active .light-dot {
-            animation: blink-green 1.2s infinite;
-        }
-
-        /* Seek Bar Styles */
-        .slider-container {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 16px;
-            border-radius: 8px;
-            background: #0f172a;
-            border: 1px solid var(--border-color);
-            outline: none;
-            cursor: pointer;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--neutral-grey);
-            cursor: pointer;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            transition: background-color 0.15s;
-        }
-
-        .slider.moved::-webkit-slider-thumb {
-            background: var(--primary);
-        }
-
-        /* Tiled Grid */
-        .columns-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .column {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            opacity: 0.35;
-            transition: opacity 0.2s ease;
-        }
-
-        .column.active {
-            opacity: 1;
-        }
-
-        .item {
-            padding: 8px 12px;
-            background-color: #162032;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .column.active.lhs-zone .item {
-            border-color: var(--danger-color);
-            background-color: rgba(248, 113, 113, 0.06);
-            color: var(--danger-color);
-        }
-
-        .column.active.rhs-zone .item {
-            border-color: var(--safe-color);
-            background-color: rgba(74, 222, 128, 0.06);
-            color: var(--safe-color);
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Dropdown Architecture Setup */
-        .dropdown-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-
-        .dropdown-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .custom-select {
-            width: 100%;
-            padding: 12px;
-            font-size: 0.85rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: #0f172a;
-            outline: none;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* Panel Output */
-        .dynamic-panel {
-            background-color: #0f172a;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 12px;
-            display: none;
-        }
-
-        .danger-border { border-left: 4px solid var(--danger-color); }
-        .safe-border { border-left: 4px solid var(--safe-color); }
-
-        .panel-label {
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-        }
-
-        .dynamic-panel p {
-            font-size: 0.85rem;
-            color: #fff;
-            white-space: pre-line;
-            line-height: 1.45;
-        }
-
-        .status-box {
-            padding: 12px;
-            background-color: #0f172a;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.8rem;
-            text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-    </style>
+    .info {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
+  <h1>Transit Damage Detection Simulator</h1>
 
-<div class="container">
-    <header>
-        <h1>Showroom Handover Shield</h1>
-        <p>GitHub Repository Stable Release v1.4.0</p>
-    </header>
+  <div class="slider-container">
+    <input type="range" id="lightSlider" min="0" max="100" value="50">
+  </div>
 
-    <div class="card">
-        
-        <!-- MAIN LIGHTING SET-UP HEAD ROW -->
-        <div class="heading-row">
-            <div class="heading-text">Lighting set-up</div>
-            <div class="inline-indicators">
-                <div class="indicator-pill danger-pill"><div class="light-dot"></div>cannot be detected</div>
-                <div class="indicator-pill safe-pill"><div class="light-dot"></div>can be detected</div>
-            </div>
-        </div>
-        
-        <div class="slider-container">
-            <input type="range" id="lighting-slider" class="slider" min="0" max="2" value="1" oninput="updateSetup()">
-        </div>
+  <div class="labels">
+    <span>LHS: Indoor / Warehouse / Showroom / Dim / Shadow</span>
+    <span>RHS: Broad Daylight</span>
+  </div>
 
-        <div class="columns-grid">
-            <div id="lhs-column" class="column">
-                <div class="item">Showroom</div>
-                <div class="item">Warehouse</div>
-                <div class="item">Dim</div>
-                <div class="item">Shadow / Overcast</div>
-            </div>
+  <!-- Categories -->
+  <div class="category">
+    <h2 onclick="toggleDropdown('body')">
+      📐 Body Alignment Damages 
+      <span id="bodyLight" class="light"></span>
+    </h2>
+    <div id="body" class="dropdown">
+      <ul>
+        <li>High-Tension Panel Warping</li>
+        <li>A-Pillar Crushing Stress Fractures</li>
+        <li>Transit Hail Dings</li>
+        <li>Subsurface Panel Waves</li>
+      </ul>
+    </div>
+  </div>
 
-            <div id="rhs-column" class="column">
-                <div class="item rhs-item">Daylight</div>
-            </div>
-        </div>
+  <div class="category">
+    <h2 onclick="toggleDropdown('paint')">
+      🎨 Exterior Paint & Coating Deficiencies 
+      <span id="paintLight" class="light"></span>
+    </h2>
+    <div id="paint" class="dropdown">
+      <ul>
+        <li>Buffer Halos & Holograms</li>
+        <li>Guardrail Door-Crease Scrapes</li>
+        <li>Tie-Down Chain Whiplash</li>
+        <li>Silicone-Glaze Scratch Masks</li>
+        <li>Smart Paint-Pen Fillers</li>
+        <li>Matte Surface Gloss Polishing</li>
+        <li>Factory Orange-Peel Mismatch</li>
+        <li>Industrial Fallout Inclusions</li>
+        <li>Acid Rain & Bird Dropping Etching</li>
+      </ul>
+    </div>
+  </div>
 
-        <div id="status-message" class="status-box">
-            Awaiting input. Move the center seek bar pin to the left or right to activate dashboard indicators.
-        </div>
+  <div class="category">
+    <h2 onclick="toggleDropdown('glass')">
+      💎 Glass, Wheels & Lower Trim Elements 
+      <span id="glassLight" class="light"></span>
+    </h2>
+    <div id="glass" class="dropdown">
+      <ul>
+        <li>Panoramic Roof Stress Fractures</li>
+        <li>Under-Bumper Scrape Gouges</li>
+        <li>Alloy Wheel Rim Lip Grazes</li>
+        <li>UV Trim Fading & Dullness</li>
+      </ul>
+    </div>
+  </div>
 
-        <!-- DROPDOWN ARRAYS FULLY RESTORED -->
-        <div class="dropdown-stack">
-            
-            <!-- Category 1 Dropdown -->
-            <div class="dropdown-group">
-                <div class="heading-row">
-                    <div class="heading-text">📐 Structural & Body Alignment</div>
-                    <div class="inline-indicators">
-                        <div class="indicator-pill danger-pill"><div class="light-dot"></div>cannot be detected</div>
+  <div class="info">
+    <p>🔴 Red blinking = Cannot be detected</p>
+    <p>🟢 Green blinking = Can be detected</p>
+  </div>
+
+  <script>
+    const slider = document.getElementById('lightSlider');
+    const categories = ['bodyLight', 'paintLight', 'glassLight'];
+
+    function updateLights() {
+      const value = slider.value;
+      categories.forEach(id => {
+        const el = document.getElementById(id);
+        if (value < 50) {
+          el.className = 'light red';
+        } else {
+          el.className = 'light green';
+        }
+      });
+    }
+
+    function toggleDropdown(id) {
+      const dropdown = document.getElementById(id);
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    slider.addEventListener('input', updateLights);
+
+    // Initialize lights
+    updateLights();
+  </script>
+</body>
+</html>
