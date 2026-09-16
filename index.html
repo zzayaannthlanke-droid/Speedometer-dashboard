@@ -1,1161 +1,361 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>High-Speed Diagnostics Dashboard</title>
-
-<style>
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-body {
-    background: #000;
-    color: #fff;
-    min-height: 100vh;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    padding: 20px;
-}
-
-.dashboard-container {
-    width: 100%;
-    max-width: 980px;
-
-    display: flex;
-
-    background: #050505;
-
-    border: 1px solid #111;
-    border-radius: 24px;
-
-    padding: 35px;
-
-    gap: 40px;
-}
-
-
-/* ================================
-   LEFT PANEL
-================================ */
-
-.left-panel {
-    flex: 1;
-
-    display: flex;
-    flex-direction: column;
-
-    align-items: center;
-    justify-content: center;
-
-    border-right: 1px solid #111;
-
-    padding-right: 20px;
-}
-
-
-/* ================================
-   SPEEDOMETER
-================================ */
-
-.speedometer {
-    width: 320px;
-    height: 320px;
-
-    position: relative;
-}
-
-.speedometer svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-
-/* Gauge numbers */
-
-.gauge-number {
-    fill: #555;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-
-/* Needle */
-
-#needle {
-    transform-origin: 160px 160px;
-
-    transform:
-        rotate(-120deg);
-
-    transition:
-        transform 0.45s cubic-bezier(.2,.8,.2,1);
-}
-
-
-/* Digital display */
-
-.digital-display {
-    text-align: center;
-
-    margin-top: -10px;
-
-    margin-bottom: 25px;
-}
-
-.current-speed {
-    font-size: 54px;
-
-    font-weight: 800;
-
-    line-height: 1;
-}
-
-.unit {
-    display: block;
-
-    margin-top: 5px;
-
-    color: #444;
-
-    font-size: 13px;
-
-    letter-spacing: 2px;
-
-    text-transform: uppercase;
-}
-
-
-/* ================================
-   INPUT
-================================ */
-
-.input-group {
-    width: 100%;
-    max-width: 260px;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 6px;
-}
-
-input[type="number"] {
-
-    width: 100%;
-
-    background: #111;
-
-    border: 1px solid #222;
-
-    border-radius: 10px;
-
-    padding: 14px;
-
-    color: white;
-
-    font-size: 18px;
-
-    font-weight: 600;
-
-    text-align: center;
-}
-
-input[type="number"]:focus {
-
-    outline: none;
-
-    border-color: white;
-}
-
-.error-message {
-
-    min-height: 16px;
-
-    color: #ff4444;
-
-    font-size: 12px;
-
-    text-align: center;
-}
-
-
-/* ================================
-   RIGHT PANEL
-================================ */
-
-.right-panel {
-    flex: 1.4;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 20px;
-}
-
-.panel-header h2 {
-    font-size: 20px;
-
-    margin-bottom: 4px;
-}
-
-.panel-header p {
-    font-size: 13px;
-
-    color: #666;
-}
-
-
-/* ================================
-   TABS
-================================ */
-
-.tab-bar {
-
-    display: flex;
-
-    gap: 4px;
-
-    overflow-x: auto;
-
-    padding-bottom: 4px;
-
-    border-bottom: 1px solid #1a1a1a;
-}
-
-.tab-btn {
-
-    background: none;
-
-    border: none;
-
-    color: #666;
-
-    padding: 10px 12px;
-
-    font-size: 13px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    white-space: nowrap;
-
-    position: relative;
-}
-
-.tab-btn:hover {
-    color: white;
-}
-
-.tab-btn.active {
-    color: white;
-}
-
-.tab-btn.active::after {
-
-    content: "";
-
-    position: absolute;
-
-    bottom: -5px;
-
-    left: 0;
-
-    width: 100%;
-
-    height: 2px;
-
-    background: white;
-}
-
-
-/* ================================
-   MEDIA
-================================ */
-
-.media-viewer {
-
-    flex: 1;
-
-    min-height: 240px;
-
-    background: #000;
-
-    border: 1px solid #1a1a1a;
-
-    border-radius: 14px;
-
-    overflow: hidden;
-}
-
-.video-container {
-
-    width: 100%;
-
-    height: 180px;
-
-    background: #0a0a0a;
-
-    position: relative;
-}
-
-video {
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-
-    background: #000;
-}
-
-.video-status-overlay {
-
-    position: absolute;
-
-    top: 10px;
-    right: 10px;
-
-    padding: 4px 10px;
-
-    background: rgba(0,0,0,.7);
-
-    border: 1px solid #222;
-
-    border-radius: 6px;
-
-    color: #ff9900;
-
-    font-size: 11px;
-
-    font-weight: 600;
-}
-
-.media-caption-box {
-
-    padding: 15px;
-
-    background: #050505;
-
-    border-top: 1px solid #111;
-}
-
-.media-caption-box h4 {
-
-    font-size: 14px;
-
-    margin-bottom: 6px;
-}
-
-.media-caption-box p {
-
-    font-size: 12px;
-
-    line-height: 1.4;
-
-    color: #888;
-}
-
-
-/* ================================
-   MOBILE
-================================ */
-
-@media (max-width: 768px) {
-
-    .dashboard-container {
-
-        flex-direction: column;
-
-        padding: 25px;
-
-    }
-
-    .left-panel {
-
-        border-right: none;
-
-        border-bottom: 1px solid #111;
-
-        padding-right: 0;
-
-        padding-bottom: 30px;
-    }
-
-}
-
-@media (max-width: 400px) {
-
-    .speedometer {
-
-        width: 280px;
-        height: 280px;
-    }
-
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EU Showroom Delivery Risk Auditor</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
+            --primary: #3182ce;
+            --primary-hover: #2b6cb0;
+            --border-color: #e2e8f0;
+            --safe-color: #48bb78;
+            --warning-color: #ecc94b;
+            --danger-color: #f56565;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: #edf2f7;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 12px 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4a5568;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tab-btn span.icon {
+            font-size: 1.2rem;
+        }
+
+        .tab-btn.active {
+            background-color: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            margin-bottom: 16px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        /* Seek Bar/Slider Styling */
+        .slider-container {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            background: #e2e8f0;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+
+        .slider::-webkit-slider-thumb:active {
+            transform: scale(1.15);
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #718096;
+            padding: 0 2px;
+        }
+
+        /* Select styling for other checklists */
+        .custom-select {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            background-color: #fff;
+            outline: none;
+            color: var(--text-color);
+        }
+
+        .custom-select:focus {
+            border-color: var(--primary);
+        }
+
+        /* Risk Meter Display */
+        .risk-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #edf2f7;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+
+        .risk-display span.title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .risk-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #fff;
+            transition: background-color 0.2s;
+        }
+
+        /* Threat Box Details */
+        .threat-box {
+            background-color: #fffaf0;
+            border-left: 4px solid var(--warning-color);
+            padding: 14px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .threat-box h4 {
+            font-size: 0.95rem;
+            color: #dd6b20;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .threat-box p {
+            font-size: 0.85rem;
+            color: #7b341e;
+        }
+
+        /* Action Block */
+        .action-block {
+            margin-top: 16px;
+        }
+
+        .action-block h3 {
+            font-size: 1rem;
+            color: #1a202c;
+            margin-bottom: 10px;
+        }
+
+        .output-box {
+            background-color: #f7fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .output-box .box-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #a0aec0;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .output-box p {
+            font-size: 0.9rem;
+            color: #4a5568;
+            font-style: italic;
+            white-space: pre-line;
+        }
+
+        .copy-btn {
+            width: 100%;
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .copy-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.99);
+        }
+
+        /* Utilities */
+        .danger-theme {
+            background-color: #fff5f5;
+            border-left-color: var(--danger-color);
+        }
+        .danger-theme h4 { color: #e53e3e; }
+        .danger-theme p { color: #9b2c2c; }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: #2d3748;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            opacity: 0;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
 </head>
-
-
 <body>
 
+<div class="container">
+    <header>
+        <h1>Showroom Delivery Audit</h1>
+        <p>Dynamic Risk Assessor & Legal Counter-Strategist</p>
+    </header>
 
-<div class="dashboard-container">
-
-
-<!-- =====================================
-     LEFT SIDE
-===================================== -->
-
-<div class="left-panel">
-
-
-    <!-- SPEEDOMETER -->
-
-    <div class="speedometer">
-
-        <svg
-            viewBox="0 0 320 320"
-            xmlns="http://www.w3.org/2000/svg">
-
-
-            <!-- =========================
-                 OUTER GAUGE
-            ========================== -->
-
-            <path
-                d="M 58 244
-                   A 125 125 0 1 1 262 244"
-                fill="none"
-                stroke="#1c1c1c"
-                stroke-width="2"
-            />
-
-
-            <!-- =========================
-                 TICK MARKS
-            ========================== -->
-
-            <g
-                id="ticks"
-                stroke="#333"
-                stroke-width="2">
-            </g>
-
-
-            <!-- =========================
-                 NUMBERS
-            ========================== -->
-
-            <text
-                x="67"
-                y="252"
-                text-anchor="middle"
-                class="gauge-number">
-                0
-            </text>
-
-            <text
-                x="45"
-                y="170"
-                text-anchor="middle"
-                class="gauge-number">
-                50
-            </text>
-
-            <text
-                x="78"
-                y="92"
-                text-anchor="middle"
-                class="gauge-number">
-                100
-            </text>
-
-            <text
-                x="160"
-                y="62"
-                text-anchor="middle"
-                class="gauge-number">
-                150
-            </text>
-
-            <text
-                x="242"
-                y="92"
-                text-anchor="middle"
-                class="gauge-number">
-                200
-            </text>
-
-            <text
-                x="275"
-                y="170"
-                text-anchor="middle"
-                class="gauge-number">
-                250
-            </text>
-
-            <text
-                x="253"
-                y="252"
-                text-anchor="middle"
-                class="gauge-number">
-                300
-            </text>
-
-
-            <!-- =========================
-                 NEEDLE
-            ========================== -->
-
-            <g id="needle">
-
-                <line
-                    x1="160"
-                    y1="160"
-                    x2="160"
-                    y2="55"
-                    stroke="white"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                />
-
-            </g>
-
-
-            <!-- =========================
-                 CENTER HUB
-            ========================== -->
-
-            <circle
-                cx="160"
-                cy="160"
-                r="12"
-                fill="white"
-            />
-
-            <circle
-                cx="160"
-                cy="160"
-                r="5"
-                fill="black"
-            />
-
-
-        </svg>
-
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('physical')">
+            <span class="icon">🚗</span>
+            <span>Physical</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('digital')">
+            <span class="icon">💻</span>
+            <span>Digital</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('financial')">
+            <span class="icon">💶</span>
+            <span>Financial</span>
+        </button>
     </div>
 
-
-    <!-- DIGITAL SPEED -->
-
-    <div class="digital-display">
-
-        <div
-            id="digitalSpeed"
-            class="current-speed">
-            0
-        </div>
-
-        <span class="unit">
-            km/h
-        </span>
-
-    </div>
-
-
-    <!-- INPUT -->
-
-    <div class="input-group">
-
-        <input
-            type="number"
-            id="speedInput"
-            min="0"
-            max="300"
-            value="0"
-            placeholder="Enter Speed (0-300)"
-        >
-
-        <div
-            id="errorBox"
-            class="error-message">
-        </div>
-
-    </div>
-
-
-</div>
-
-
-
-<!-- =====================================
-     RIGHT SIDE
-===================================== -->
-
-<div class="right-panel">
-
-
-    <div class="panel-header">
-
-        <h2>
-            Real-World Vehicle Limits
-        </h2>
-
-        <p>
-            Select a part to analyze how daily
-            driving components handle high speeds.
-        </p>
-
-    </div>
-
-
-    <!-- TABS -->
-
-    <div class="tab-bar">
-
-        <button
-            class="tab-btn active"
-            onclick="switchTab('tyres', this)">
-            Tyres
-        </button>
-
-        <button
-            class="tab-btn"
-            onclick="switchTab('brakes', this)">
-            Brakes
-        </button>
-
-        <button
-            class="tab-btn"
-            onclick="switchTab('bolts', this)">
-            Wheel Bolts
-        </button>
-
-        <button
-            class="tab-btn"
-            onclick="switchTab('windshield', this)">
-            Windshield
-        </button>
-
-        <button
-            class="tab-btn"
-            onclick="switchTab('ev', this)">
-            EV Battery
-        </button>
-
-        <button
-            class="tab-btn"
-            onclick="switchTab('regulations', this)">
-            Global Laws
-        </button>
-
-    </div>
-
-
-    <!-- MEDIA -->
-
-    <div class="media-viewer">
-
-        <div class="video-container">
-
-            <video
-                id="dashboardVideo"
-                autoplay
-                muted
-                playsinline>
-
-                <source
-                    id="videoSource"
-                    src="sample.mp4"
-                    type="video/mp4">
-
-            </video>
-
-            <div
-                id="videoFileLabel"
-                class="video-status-overlay">
-
-                RUNNING TRIAL: sample.mp4
-
+    <!-- MAIN INTERACTIVE APP CARD -->
+    <div class="card">
+        
+        <!-- Tab 1: Physical Assessment -->
+        <div id="tab-physical" class="tab-content active">
+            <div class="control-group">
+                <label for="lighting-slider">Inspection Light Conditions:</label>
+                <div class="slider-container">
+                    <input type="range" id="lighting-slider" class="slider" min="0" max="2" value="0" oninput="auditPhysical()">
+                </div>
+                <div class="slider-labels">
+                    <span style="font-weight: bold; color: var(--danger-color);">Dim/Indoor Warehouse</span>
+                    <span>Overcast/Shade</span>
+                    <span style="font-weight: bold; color: var(--safe-color);">Direct Bright Daylight</span>
+                </div>
             </div>
-
         </div>
 
-
-        <div class="media-caption-box">
-
-            <h4 id="captionTitle">
-                Tyres Status
-            </h4>
-
-            <p id="captionText">
-                Tyres are one of the most important
-                components when vehicle speed increases.
-            </p>
-
-        </div>
-
-    </div>
-
-
-</div>
-
-</div>
-
-
-
-<script>
-
-/* =====================================================
-   SPEEDOMETER
-===================================================== */
-
-const speedInput =
-    document.getElementById("speedInput");
-
-const digitalSpeed =
-    document.getElementById("digitalSpeed");
-
-const needle =
-    document.getElementById("needle");
-
-const errorBox =
-    document.getElementById("errorBox");
-
-
-/*
-    Gauge:
-
-    0 km/h   = -120 degrees
-    150 km/h = 0 degrees
-    300 km/h = +120 degrees
-*/
-
-
-function updateSpeed(speed) {
-
-    const minAngle = -120;
-
-    const maxAngle = 120;
-
-
-    /*
-        Convert 0-300
-        into 0-1.
-    */
-
-    const percentage =
-        speed / 300;
-
-
-    /*
-        Convert percentage
-        to angle.
-    */
-
-    const angle =
-        minAngle +
-        (percentage *
-        (maxAngle - minAngle));
-
-
-    /*
-        Apply rotation.
-    */
-
-    needle.style.transform =
-        `rotate(${angle}deg)`;
-
-
-    /*
-        Update number.
-    */
-
-    digitalSpeed.textContent =
-        speed;
-}
-
-
-
-/* =====================================================
-   INPUT
-===================================================== */
-
-speedInput.addEventListener(
-    "input",
-    function () {
-
-        let speed =
-            Number(this.value);
-
-
-        /*
-            Empty input.
-        */
-
-        if (this.value === "") {
-
-            updateSpeed(0);
-
-            errorBox.textContent = "";
-
-            return;
-        }
-
-
-        /*
-            Below minimum.
-        */
-
-        if (speed < 0) {
-
-            speed = 0;
-
-            errorBox.textContent =
-                "Minimum speed is 0 km/h.";
-        }
-
-
-        /*
-            Above maximum.
-        */
-
-        else if (speed > 300) {
-
-            speed = 300;
-
-            errorBox.textContent =
-                "Maximum speed is 300 km/h.";
-        }
-
-
-        /*
-            Valid value.
-        */
-
-        else {
-
-            errorBox.textContent = "";
-        }
-
-
-        updateSpeed(speed);
-
-    }
-);
-
-
-/* =====================================================
-   INITIALIZE
-===================================================== */
-
-updateSpeed(0);
-
-
-
-/* =====================================================
-   CREATE TICK MARKS
-===================================================== */
-
-const ticks =
-    document.getElementById("ticks");
-
-
-for (
-    let i = 0;
-    i <= 30;
-    i++
-) {
-
-    /*
-        Calculate angle.
-    */
-
-    const angle =
-        -120 +
-        (i * 8);
-
-
-    /*
-        Convert degrees to radians.
-    */
-
-    const radians =
-        angle *
-        Math.PI /
-        180;
-
-
-    /*
-        Outer radius.
-    */
-
-    const outerRadius = 125;
-
-
-    /*
-        Inner radius.
-    */
-
-    const innerRadius =
-        i % 5 === 0
-        ? 112
-        : 117;
-
-
-    /*
-        Center.
-    */
-
-    const cx = 160;
-    const cy = 160;
-
-
-    /*
-        Outer point.
-    */
-
-    const x1 =
-        cx +
-        outerRadius *
-        Math.sin(radians);
-
-    const y1 =
-        cy -
-        outerRadius *
-        Math.cos(radians);
-
-
-    /*
-        Inner point.
-    */
-
-    const x2 =
-        cx +
-        innerRadius *
-        Math.sin(radians);
-
-    const y2 =
-        cy -
-        innerRadius *
-        Math.cos(radians);
-
-
-    /*
-        Create SVG line.
-    */
-
-    const line =
-        document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "line"
-        );
-
-
-    line.setAttribute(
-        "x1",
-        x1
-    );
-
-    line.setAttribute(
-        "y1",
-        y1
-    );
-
-    line.setAttribute(
-        "x2",
-        x2
-    );
-
-    line.setAttribute(
-        "y2",
-        y2
-    );
-
-
-    ticks.appendChild(line);
-}
-
-
-
-/* =====================================================
-   TAB SYSTEM
-===================================================== */
-
-function switchTab(
-    tabName,
-    button
-) {
-
-    /*
-        Remove active class.
-    */
-
-    document
-        .querySelectorAll(".tab-btn")
-        .forEach(
-            btn =>
-                btn.classList.remove("active")
-        );
-
-
-    /*
-        Activate selected tab.
-    */
-
-    button.classList.add("active");
-
-
-    /*
-        Video files.
-    */
-
-    const videos = {
-
-        tyres:
-            "sample.mp4",
-
-        brakes:
-            "brakes.mp4",
-
-        bolts:
-            "bolts.mp4",
-
-        windshield:
-            "windshield.mp4",
-
-        ev:
-            "ev-battery.mp4",
-
-        regulations:
-            "global-laws.mp4"
-    };
-
-
-    /*
-        Titles.
-    */
-
-    const titles = {
-
-        tyres:
-            "Tyres Status",
-
-        brakes:
-            "Brakes Status",
-
-        bolts:
-            "Wheel Bolts Status",
-
-        windshield:
-            "Windshield Status",
-
-        ev:
-            "EV Battery Status",
-
-        regulations:
-            "Global Laws"
-    };
-
-
-    /*
-        Descriptions.
-    */
-
-    const descriptions = {
-
-        tyres:
-            "Tyres are one of the most important components when vehicle speed increases.",
-
-        brakes:
-            "Braking systems must dissipate increasing amounts of kinetic energy as speed rises.",
-
-        bolts:
-            "Wheel bolts secure the wheel assembly and must withstand significant loads.",
-
-        windshield:
-            "Windshield construction contributes to occupant protection.",
-
-        ev:
-            "EV batteries and thermal management systems must handle demanding operating conditions.",
-
-        regulations:
-            "Speed regulations and vehicle requirements vary across different regions."
-    };
-
-
-    /*
-        Video.
-    */
-
-    const video =
-        document.getElementById(
-            "dashboardVideo"
-        );
-
-    const source =
-        document.getElementById(
-            "videoSource"
-        );
-
-
-    source.src =
-        videos[tabName];
-
-
-    video.load();
-
-
-    video.play().catch(
-        () => {}
-    );
-
-
-    /*
-        Label.
-    */
-
-    document.getElementById(
-        "videoFileLabel"
-    ).textContent =
-        "RUNNING TRIAL: " +
-        videos[tabName];
-
-
-    /*
-        Caption.
-    */
-
-    document.getElementById(
-        "captionTitle"
-    ).textContent =
-        titles[tabName];
-
-
-    document.getElementById(
-        "captionText"
-    ).textContent =
-        descriptions[tabName];
-
-}
-
-</script>
-
-</body>
-</html>
-```
+        <!-- Tab 2: Digital Assessment -->
+        <div id="tab-digital" class="tab-content">
+            <div class="control-group">
+                <label for="software-select">Software & Recall Verification Status:</label>
+                <select id="software-select" class="custom-select" onchange="auditDigital()">
