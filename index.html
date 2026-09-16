@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Showroom Handover Shield</title>
+    <title>Lighting Setup Auditor</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -11,11 +11,9 @@
             --text-color: #f1f5f9;
             --text-muted: #94a3b8;
             --primary: #38bdf8;
-            --primary-hover: #0ea5e9;
             --border-color: #334155;
-            --safe-color: #4ade80;
-            --warning-color: #facc15;
             --danger-color: #f87171;
+            --safe-color: #4ade80;
             --neutral-grey: #64748b;
         }
 
@@ -30,342 +28,207 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.4;
-            padding: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
         }
 
         .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 14px;
-            padding: 4px 0;
-        }
-
-        header h1 {
-            font-size: 1.25rem;
-            color: #fff;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        header p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .tabs {
-            display: flex;
-            background-color: #0f172a;
-            border: 1px solid var(--border-color);
-            padding: 4px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            background: none;
-            border: none;
-            padding: 10px 4px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.15s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .tab-btn.active {
-            background-color: var(--card-bg);
-            color: var(--primary);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 480px;
         }
 
         .card {
             background-color: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            margin-bottom: 12px;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
 
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .control-group {
-            margin-bottom: 20px;
-        }
-
-        .control-group label.main-label {
-            display: block;
+        .heading {
+            font-size: 1rem;
             font-weight: 800;
-            font-size: 0.95rem;
-            margin-bottom: 14px;
-            color: #fff;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            color: #fff;
+            margin-bottom: 20px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 6px;
+            padding-bottom: 8px;
         }
 
+        /* Seek Bar Container */
         .slider-container {
-            position: relative;
-            margin-bottom: 16px;
-            padding: 0 4px;
+            width: 100%;
+            margin-bottom: 20px;
         }
 
         .slider {
             -webkit-appearance: none;
             width: 100%;
-            height: 20px;
-            border-radius: 10px;
+            height: 16px;
+            border-radius: 8px;
             background: #0f172a;
             border: 1px solid var(--border-color);
             outline: none;
             cursor: pointer;
         }
 
+        /* Default pin styling centered */
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: var(--neutral-grey);
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            transition: background-color 0.15s, transform 0.1s;
             border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            transition: background-color 0.15s;
         }
 
-        .slider.activated::-webkit-slider-thumb {
+        .slider.moved::-webkit-slider-thumb {
             background: var(--primary);
         }
 
-        .slider::-webkit-slider-thumb:active {
-            transform: scale(1.15);
-        }
-
-        /* Side-by-Side column structure */
-        .split-labels-container {
+        /* Split Columns Grid */
+        .columns-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 14px;
+            gap: 16px;
         }
 
-        .side-column {
+        .column {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
+            opacity: 0.5;
+            transition: opacity 0.2s ease;
         }
 
-        .side-heading {
+        .column.active {
+            opacity: 1;
+        }
+
+        .column-title {
             font-size: 0.75rem;
             font-weight: 800;
             text-transform: uppercase;
             color: var(--text-muted);
-            margin-bottom: 2px;
-            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
 
-        .mode-option {
-            padding: 8px 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            background-color: #162032;
-            transition: all 0.15s ease;
-        }
-
-        .daylight-box {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        /* Active styling rules based on thumb placement */
-        .side-column.danger-active .side-heading {
+        .column.active .lhs-title {
             color: var(--danger-color);
         }
-        .side-column.danger-active .mode-option {
+
+        .column.active .rhs-title {
+            color: var(--safe-color);
+        }
+
+        .item {
+            padding: 10px 12px;
+            background-color: #162032;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .column.active.lhs-zone .item {
             border-color: var(--danger-color);
             background-color: rgba(248, 113, 113, 0.08);
             color: var(--danger-color);
         }
 
-        .side-column.safe-active .side-heading {
-            color: var(--safe-color);
-        }
-        .side-column.safe-active .mode-option {
+        .column.active.rhs-zone .item {
             border-color: var(--safe-color);
             background-color: rgba(74, 222, 128, 0.08);
             color: var(--safe-color);
-        }
-
-        .custom-select {
-            width: 100%;
-            padding: 12px;
-            font-size: 0.9rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: #0f172a;
-            outline: none;
-            color: #fff;
-            font-weight: 600;
-        }
-
-        .risk-display {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #0f172a;
-            padding: 10px 14px;
-            border-radius: 10px;
-            margin: 14px 0;
-            border: 1px solid var(--border-color);
-        }
-
-        .risk-display span.title {
-            font-weight: 700;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-        }
-
-        .risk-badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: #fff;
-        }
-
-        .threat-box {
-            background-color: rgba(250, 204, 21, 0.05);
-            border-left: 4px solid var(--warning-color);
-            padding: 12px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 16px;
-            display: none;
-        }
-
-        .threat-box h4 {
-            font-size: 0.85rem;
-            color: var(--warning-color);
-            margin-bottom: 4px;
-        }
-
-        .threat-box p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .danger-theme {
-            background-color: rgba(248, 113, 113, 0.05);
-            border-left-color: var(--danger-color);
-        }
-        .danger-theme h4 { color: var(--danger-color); }
-
-        .action-block h3 {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            color: #fff;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        .output-box {
-            background-color: #0f172a;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-        }
-
-        .output-box .box-label {
-            font-size: 0.7rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .output-box p {
-            font-size: 0.85rem;
-            color: #fff;
-            white-space: pre-line;
-        }
-
-        .copy-btn {
-            width: 100%;
-            background-color: var(--primary);
-            color: #0f172a;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 750;
-            cursor: pointer;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
         }
 
-        .copy-btn:active {
-            transform: scale(0.98);
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background-color: var(--primary);
-            color: #0f172a;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: transform 0.2s ease;
-            z-index: 1000;
-            opacity: 0;
-        }
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
+        /* Display Box */
+        .output-box {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: center;
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>SHOWROOM HANDOVER SHIELD</h1>
-        <p>Instant Consumer Protection Engine</p>
-    </header>
+    <div class="card">
+        <div class="heading">Lighting set-up</div>
+        
+        <div class="slider-container">
+            <!-- min=0 (LHS), max=2 (RHS), default value=1 (exact center pin) -->
+            <input type="range" id="lighting-slider" class="slider" min="0" max="2" value="1" oninput="updateSetup()">
+        </div>
 
-    <div class="tabs">
+        <div class="columns-grid">
+            <!-- LHS Segment -->
+            <div id="lhs-column" class="column">
+                <div class="column-title lhs-title">⬅️ LHS Choices</div>
+                <div class="item">Showroom</div>
+                <div class="item">Warehouse</div>
+                <div class="item">Dim</div>
+                <div class="item">Shadow / Overcast</div>
+            </div>
+
+            <!-- RHS Segment -->
+            <div id="rhs-column" class="column">
+                <div class="column-title rhs-title">RHS Choice ➡️</div>
+                <div class="item rhs-item">Daylight</div>
+            </div>
+        </div>
+
+        <div id="status-message" class="output-box">
+            Awaiting input. Move the seek bar pin to the left or right to proceed.
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateSetup() {
+        const slider = document.getElementById('lighting-slider');
+        const val = slider.value;
+        const lhs = document.getElementById('lhs-column');
+        const rhs = document.getElementById('rhs-column');
+        const msg = document.getElementById('status-message');
+
+        // Clear active classes
+        lhs.className = "column";
+        rhs.className = "column";
+        slider.classList.add('moved');
+
+        if (val == 1) {
+            // Reverted back to exact center pin
+            slider.classList.remove('moved');
+            msg.textContent = "Awaiting input. Move the seek bar pin to the left or right to proceed.";
+        } else if (val == 0) {
+            // Dragged to LHS
+            lhs.classList.add('active', 'lhs-zone');
+            msg.textContent = "Sub-optimal environment selected. Countermeasures loaded.";
+        } else if (val == 2) {
+            // Dragged to RHS
+            rhs.classList.add('active', 'rhs-zone');
+            msg.textContent = "Optimal daylight environment selected. Safe check conditions.";
+        }
+    }
+</script>
+
+</body>
+</html>
