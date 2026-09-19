@@ -1,10 +1,16 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Transit Damage Detection Simulator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
       background: #f4f4f4;
@@ -18,53 +24,16 @@
       font-size: 1.2rem;
     }
 
-    .slider-container {
-      display: flex;
-      justify-content: center;
-      margin: 15px 0 10px 0;
-    }
-
-    input[type=range] {
-      width: 100%;
-      height: 30px;
-      -webkit-appearance: none;
-      background: transparent;
-    }
-
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      height: 25px;
-      width: 25px;
-      border-radius: 50%;
-      background: #007bff;
-      cursor: pointer;
-    }
-
-    input[type=range]::-webkit-slider-runnable-track {
-      height: 8px;
-      background: #ddd;
-      border-radius: 4px;
-    }
-
-    .labels {
-      display: flex;
-      overflow-x: auto;
-      white-space: nowrap;
-      margin: 5px 0 15px 0;
-      font-size: 0.8rem;
-    }
-
-    .labels span {
-      flex: 0 0 auto;
-      margin-right: 15px;
-    }
+    /* -----------------------------
+       DAMAGE CATEGORIES
+    ----------------------------- */
 
     .category {
       margin: 10px 0;
       background: #fff;
       padding: 10px;
       border-radius: 6px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .category h2 {
@@ -76,11 +45,16 @@
       font-size: 1rem;
     }
 
+    /* -----------------------------
+       STATUS LIGHT
+    ----------------------------- */
+
     .light {
       width: 12px;
       height: 12px;
       border-radius: 50%;
       margin-left: 8px;
+      flex-shrink: 0;
     }
 
     .red {
@@ -94,16 +68,36 @@
     }
 
     @keyframes blinkRed {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
     }
 
     @keyframes blinkGreen {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
     }
+
+    /* -----------------------------
+       DROPDOWN
+    ----------------------------- */
 
     .dropdown {
       display: none;
@@ -117,23 +111,121 @@
       padding-left: 15px;
     }
 
+    .dropdown li {
+      margin-bottom: 5px;
+    }
+
+    /* -----------------------------
+       SEEK BAR
+       NOW BELOW THE CATEGORIES
+    ----------------------------- */
+
+    .slider-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0 5px 0;
+      width: 100%;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 30px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 25px;
+      width: 25px;
+      border-radius: 50%;
+      background: #007bff;
+      cursor: pointer;
+      margin-top: -8px;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      background: #ddd;
+      border-radius: 4px;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      height: 25px;
+      width: 25px;
+      border-radius: 50%;
+      background: #007bff;
+      border: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      background: #ddd;
+      border-radius: 4px;
+    }
+
+    /* -----------------------------
+       ENVIRONMENT LABELS
+    ----------------------------- */
+
+    .labels {
+      display: flex;
+      overflow-x: auto;
+      white-space: nowrap;
+      margin: 5px 0 15px 0;
+      font-size: 0.8rem;
+      padding-bottom: 5px;
+    }
+
+    .labels span {
+      flex: 0 0 auto;
+      margin-right: 15px;
+    }
+
+    /* -----------------------------
+       STATUS EXPLANATION
+    ----------------------------- */
+
     .info {
       text-align: center;
       margin-top: 15px;
       font-size: 0.8rem;
       color: #555;
     }
+
+    /* -----------------------------
+       CURRENT ENVIRONMENT
+    ----------------------------- */
+
+    .current-environment {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 5px;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
+
 <body>
+
   <h1>Transit Damage Detection Simulator</h1>
 
-  <!-- Categories -->
+
+  <!-- =============================
+       CATEGORY 1
+  ============================== -->
+
   <div class="category">
+
     <h2 onclick="toggleDropdown('body')">
-      📐 Body Alignment Damages 
+      📐 Body Alignment Damages
       <span id="bodyLight" class="light"></span>
     </h2>
+
     <div id="body" class="dropdown">
       <ul>
         <li>High-Tension Panel Warping</li>
@@ -142,13 +234,21 @@
         <li>Subsurface Panel Waves</li>
       </ul>
     </div>
+
   </div>
 
+
+  <!-- =============================
+       CATEGORY 2
+  ============================== -->
+
   <div class="category">
+
     <h2 onclick="toggleDropdown('paint')">
-      🎨 Exterior Paint & Coating Deficiencies 
+      🎨 Exterior Paint & Coating Deficiencies
       <span id="paintLight" class="light"></span>
     </h2>
+
     <div id="paint" class="dropdown">
       <ul>
         <li>Buffer Halos & Holograms</li>
@@ -162,13 +262,21 @@
         <li>Acid Rain Etching</li>
       </ul>
     </div>
+
   </div>
 
+
+  <!-- =============================
+       CATEGORY 3
+  ============================== -->
+
   <div class="category">
+
     <h2 onclick="toggleDropdown('glass')">
-      💎 Glass, Wheels & Lower Trim Elements 
+      💎 Glass, Wheels & Lower Trim Elements
       <span id="glassLight" class="light"></span>
     </h2>
+
     <div id="glass" class="dropdown">
       <ul>
         <li>Panoramic Roof Stress Fractures</li>
@@ -177,52 +285,190 @@
         <li>UV Trim Fading</li>
       </ul>
     </div>
+
   </div>
 
-  <!-- Status Explanations -->
-  <div class="info">
-    <p>🔴 Red blinking = Cannot be detected</p>
-    <p>🟢 Green blinking = Can be detected</p>
-  </div>
 
-  <!-- Seek Bar Moved Below the Info Text -->
+  <!-- =============================
+       SEEK BAR
+       BELOW ALL THREE CATEGORIES
+  ============================== -->
+
   <div class="slider-container">
-    <input type="range" id="lightSlider" min="0" max="5" value="0" step="1">
+
+    <input
+      type="range"
+      id="lightSlider"
+      min="0"
+      max="5"
+      value="0"
+      step="1"
+    >
+
   </div>
 
-  <!-- Environment Selection Labels -->
+
+  <!-- =============================
+       ENVIRONMENT LABELS
+  ============================== -->
+
   <div class="labels">
+
     <span>Dim</span>
     <span>Overshadow</span>
     <span>Indoor/Warehouse</span>
     <span>Showroom</span>
     <span>UV Light</span>
     <span>Daylight</span>
+
   </div>
 
+
+  <!-- CURRENT ENVIRONMENT -->
+
+  <div class="current-environment">
+    Environment:
+    <span id="environmentText">Dim</span>
+  </div>
+
+
+  <!-- =============================
+       STATUS EXPLANATION
+  ============================== -->
+
+  <div class="info">
+
+    <p>🔴 Red blinking = Cannot be detected</p>
+    <p>🟢 Green blinking = Can be detected</p>
+
+  </div>
+
+
+  <!-- =============================
+       JAVASCRIPT
+  ============================== -->
+
   <script>
-    const slider = document.getElementById('lightSlider');
-    const categories = ['bodyLight', 'paintLight', 'glassLight'];
+
+    const slider = document.getElementById("lightSlider");
+
+    const categories = [
+      "bodyLight",
+      "paintLight",
+      "glassLight"
+    ];
+
+    const environments = [
+      "Dim",
+      "Overshadow",
+      "Indoor/Warehouse",
+      "Showroom",
+      "UV Light",
+      "Daylight"
+    ];
+
+    const environmentText =
+      document.getElementById("environmentText");
+
+
+    /* --------------------------------
+       UPDATE LIGHTS
+    -------------------------------- */
 
     function updateLights() {
+
       const value = parseInt(slider.value);
+
       categories.forEach(id => {
-        const el = document.getElementById(id);
+
+        const light = document.getElementById(id);
+
         if (value >= 4) {
-          el.className = 'light green';
+
+          light.className = "light green";
+
         } else {
-          el.className = 'light red';
+
+          light.className = "light red";
+
         }
+
       });
+
+      /* Update environment name */
+
+      environmentText.textContent =
+        environments[value];
+
     }
+
+
+    /* --------------------------------
+       DROPDOWN
+    -------------------------------- */
 
     function toggleDropdown(id) {
-      const dropdown = document.getElementById(id);
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+
+      const dropdown =
+        document.getElementById(id);
+
+      if (dropdown.style.display === "block") {
+
+        dropdown.style.display = "none";
+
+      } else {
+
+        dropdown.style.display = "block";
+
+      }
+
     }
 
-    slider.addEventListener('input', updateLights);
+
+    /* --------------------------------
+       SLIDER EVENT
+    -------------------------------- */
+
+    slider.addEventListener(
+      "input",
+      updateLights
+    );
+
+
+    /* --------------------------------
+       INITIAL STATE
+    -------------------------------- */
+
     updateLights();
+
   </script>
+
 </body>
 </html>
+```
+
+The layout is now:
+
+**Damage categories**
+
+→ Body Alignment
+→ Paint & Coating
+→ Glass, Wheels & Trim
+
+**↓**
+
+**Seek bar**
+
+**↓**
+
+Dim → Overshadow → Indoor/Warehouse → Showroom → UV Light → Daylight
+
+**↓**
+
+Current environment
+
+**↓**
+
+🔴 Cannot detect / 🟢 Can detect
+
+One important point: **I kept a single seek bar controlling all three category lights**, so your existing JavaScript logic remains simple.
