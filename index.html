@@ -21,7 +21,7 @@
     .slider-container {
       display: flex;
       justify-content: center;
-      margin: 10px 0;
+      margin: 15px 0 10px 0;
     }
 
     input[type=range] {
@@ -50,7 +50,7 @@
       display: flex;
       overflow-x: auto;
       white-space: nowrap;
-      margin: 5px 0;
+      margin: 5px 0 15px 0;
       font-size: 0.8rem;
     }
 
@@ -128,19 +128,6 @@
 <body>
   <h1>Transit Damage Detection Simulator</h1>
 
-  <div class="slider-container">
-    <input type="range" id="lightSlider" min="0" max="5" value="0" step="1">
-  </div>
-
-  <div class="labels">
-    <span>Dim</span>
-    <span>Overshadow</span>
-    <span>Indoor/Warehouse</span>
-    <span>Showroom</span>
-    <span>UV Light</span>
-    <span>Daylight</span>
-  </div>
-
   <!-- Categories -->
   <div class="category">
     <h2 onclick="toggleDropdown('body')">
@@ -192,9 +179,25 @@
     </div>
   </div>
 
+  <!-- Status Explanations -->
   <div class="info">
     <p>🔴 Red blinking = Cannot be detected</p>
     <p>🟢 Green blinking = Can be detected</p>
+  </div>
+
+  <!-- Seek Bar Moved Below the Info Text -->
+  <div class="slider-container">
+    <input type="range" id="lightSlider" min="0" max="5" value="0" step="1">
+  </div>
+
+  <!-- Environment Selection Labels -->
+  <div class="labels">
+    <span>Dim</span>
+    <span>Overshadow</span>
+    <span>Indoor/Warehouse</span>
+    <span>Showroom</span>
+    <span>UV Light</span>
+    <span>Daylight</span>
   </div>
 
   <script>
